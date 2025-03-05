@@ -1,8 +1,11 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using RazorPagesDotCMS.Models;
-using System.Text.Encodings.Web;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace RazorPagesDotCMS.TagHelpers
@@ -13,7 +16,8 @@ namespace RazorPagesDotCMS.TagHelpers
     [HtmlTargetElement("header-section")]
     public class HeaderTagHelper : TagHelper
     {
-        private readonly HtmlEncoder _htmlEncoder;
+        private readonly ICompositeViewEngine _viewEngine;
+        private readonly ITempDataProvider _tempDataProvider;
         
         /// <summary>
         /// ViewContext for accessing Razor view functionality
@@ -34,9 +38,10 @@ namespace RazorPagesDotCMS.TagHelpers
         [HtmlAttributeName("title")]
         public string Title { get; set; } = "DotCMS Header";
 
-        public HeaderTagHelper(HtmlEncoder htmlEncoder)
+        public HeaderTagHelper(ICompositeViewEngine viewEngine, ITempDataProvider tempDataProvider)
         {
-            _htmlEncoder = htmlEncoder;
+            _viewEngine = viewEngine;
+            _tempDataProvider = tempDataProvider;
         }
 
         /// <summary>
@@ -60,31 +65,61 @@ namespace RazorPagesDotCMS.TagHelpers
             // Get the content passed to the tag helper
             var childContent = await output.GetChildContentAsync();
             
-            // If there's no content passed, use default header content
+            // If there's no content passed, use the _HeaderExample.cshtml partial view
             if (childContent.IsEmptyOrWhiteSpace)
             {
-                output.Content.SetHtmlContent($@"
-                    <div class=""header-content"">
-                        <div class=""logo"">
-                            <a href=""/"">
-                                <img src=""/images/logo.png"" alt=""Logo"" onerror=""this.style.display='none'"" />
-                                <span>{_htmlEncoder.Encode(Title)}</span>
-                            </a>
-                        </div>
-                        <nav class=""main-nav"">
-                            <ul>
-                                <li><a href=""/"">Home</a></li>
-                                <li><a href=""/about"">About</a></li>
-                                <li><a href=""/contact"">Contact</a></li>
-                            </ul>
-                        </nav>
-                    </div>
-                ");
+                // Render the _HeaderExample.cshtml partial view
+                var partial = await RenderPartialViewToStringAsync("_HeaderExample", Title);
+                output.Content.SetHtmlContent(partial);
             }
             else
             {
                 // Use the content that was passed to the tag helper
                 output.Content.SetHtmlContent(childContent.GetContent());
+            }
+        }
+
+        private async Task<string> RenderPartialViewToStringAsync(string viewName, object model)
+        {
+            var actionContext = new ActionContext(ViewContext.HttpContext, ViewContext.RouteData, ViewContext.ActionDescriptor);
+            
+            using (var sw = new StringWriter())
+            {
+                var viewResult = _viewEngine.FindView(actionContext, viewName, false);
+
+                if (viewResult.View == null)
+                {
+                    throw new ArgumentNullException($"{viewName} does not match any available view");
+                }
+
+                // Create a new ViewDataDictionary with the correct model type
+                var viewData = new ViewDataDictionary<string>(
+                    new EmptyModelMetadataProvider(),
+                    new ModelStateDictionary())
+                {
+                    Model = model as string
+                };
+
+                // Copy any other ViewData items from the parent context
+                foreach (var kvp in ViewContext.ViewData)
+                {
+                    if (kvp.Key != "Model")
+                    {
+                        viewData[kvp.Key] = kvp.Value;
+                    }
+                }
+
+                var viewContext = new ViewContext(
+                    actionContext,
+                    viewResult.View,
+                    viewData,
+                    new TempDataDictionary(actionContext.HttpContext, _tempDataProvider),
+                    sw,
+                    new HtmlHelperOptions()
+                );
+
+                await viewResult.View.RenderAsync(viewContext);
+                return sw.ToString();
             }
         }
     }

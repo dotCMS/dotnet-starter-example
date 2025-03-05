@@ -72,13 +72,19 @@ The application acts as a proxy for dotCMS pages. When a request is made to any 
 
 The SDK includes custom TagHelpers to simplify common UI components:
 
-#### HeaderTagHelper
+#### HeaderTagHelper and FooterTagHelper
 
-The `HeaderTagHelper` provides a reusable header component that can be conditionally displayed:
+These TagHelpers provide reusable header and footer components that can be conditionally displayed. The default content is defined in partial views:
+
+- `Views/Shared/_HeaderExample.cshtml` - Default header content
+- `Views/Shared/_FooterExample.cshtml` - Default footer content
+
+Usage examples:
 
 ```cshtml
-<!-- Basic usage with default content -->
+<!-- Basic usage with default content from partial views -->
 <header-section show="@(layout?.Header == true)" title="My Site"></header-section>
+<footer-section show="@(layout?.Footer == true)" copyright="My Site"></footer-section>
 
 <!-- With custom content -->
 <header-section show="@(layout?.Header == true)">
@@ -94,33 +100,13 @@ The `HeaderTagHelper` provides a reusable header component that can be condition
 </header-section>
 ```
 
-#### FooterTagHelper
+Key features:
+- Conditional rendering based on the `show` attribute
+- Default content loaded from partial views
+- Support for custom content when provided between tags
+- Customizable through attributes (`title` for header, `copyright` for footer)
 
-The `FooterTagHelper` provides a reusable footer component that can be conditionally displayed:
-
-```cshtml
-<!-- Basic usage with default content -->
-<footer-section show="@(layout?.Footer == true)" copyright="My Site"></footer-section>
-
-<!-- With custom content -->
-<footer-section show="@(layout?.Footer == true)">
-    <div class="custom-footer">
-        <div class="footer-info">
-            <h3>My Site</h3>
-            <p>Your content management solution</p>
-        </div>
-        <div class="footer-links">
-            <h4>Quick Links</h4>
-            <ul>
-                <li><a href="/about">About Us</a></li>
-                <li><a href="/contact">Contact</a></li>
-            </ul>
-        </div>
-    </div>
-</footer-section>
-```
-
-See example files in `Views/Shared/_HeaderExample.cshtml` and `Views/Shared/_FooterExample.cshtml` for more details.
+See `Views/Shared/_TagHelperExamples.cshtml` for more detailed examples.
 
 ## Development
 

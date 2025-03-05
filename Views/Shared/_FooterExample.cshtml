@@ -1,31 +1,17 @@
-@model RazorPagesDotCMS.Models.PageResponse
+@model string
 @{
-    var layout = Model?.Entity?.Layout;
-    var page = Model?.Entity?.Page;
+    var currentYear = System.DateTime.Now.Year;
 }
 
-@* Example 1: Basic usage with default content *@
-<footer-section show="@(layout?.Footer == true)" copyright="@(page?.Title ?? "DotCMS")"></footer-section>
-
-@* Example 2: With custom content *@
-<footer-section show="@(layout?.Footer == true)" copyright="@(page?.Title ?? "DotCMS")">
-    <div class="custom-footer">
-        <div class="footer-info">
-            <h3>@(page?.Title ?? "DotCMS")</h3>
-            <p>Your content management solution</p>
-        </div>
-        <div class="footer-links">
-            <h4>Quick Links</h4>
-            <ul>
-                <li><a href="/about">About Us</a></li>
-                <li><a href="/blog">Blog</a></li>
-                <li><a href="/support">Support</a></li>
-            </ul>
-        </div>
-        <div class="footer-contact">
-            <h4>Contact Us</h4>
-            <p>Email: info@example.com</p>
-            <p>Phone: (123) 456-7890</p>
-        </div>
+<div class="footer-content">
+    <div class="copyright">
+        <p>@(Model ?? "© DotCMS") @currentYear. All rights reserved.</p>
     </div>
-</footer-section>
+    <div class="footer-links">
+        <ul>
+            <li><a href="/privacy">Privacy Policy</a></li>
+            <li><a href="/terms">Terms of Service</a></li>
+            <li><a href="/contact">Contact Us</a></li>
+        </ul>
+    </div>
+</div>
