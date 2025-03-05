@@ -65,11 +65,11 @@ namespace RazorPagesDotCMS.TagHelpers
             // Get the content passed to the tag helper
             var childContent = await output.GetChildContentAsync();
             
-            // If there's no content passed, use the _HeaderExample.cshtml partial view
+            // If there's no content passed, use the _Header.cshtml partial view
             if (childContent.IsEmptyOrWhiteSpace)
             {
-                // Render the _HeaderExample.cshtml partial view
-                var partial = await RenderPartialViewToStringAsync("_HeaderExample", Title);
+                // Render the _Header.cshtml partial view
+                var partial = await RenderPartialViewToStringAsync("_Header", Title);
                 output.Content.SetHtmlContent(partial);
             }
             else
