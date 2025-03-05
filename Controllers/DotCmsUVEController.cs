@@ -19,26 +19,25 @@ namespace RazorPagesDotCMS.Controllers
         private readonly ILogger<DotCmsUVEController> _logger;
 
         private readonly string? _apiHost;
-        private readonly string? _apiToken;  
-        private readonly string? _username;
-        private readonly string? _password;
+        private readonly string? _apiAuth;
         
         public DotCmsUVEController(IHttpClientFactory httpClientFactory, IConfiguration configuration, ILogger<DotCmsUVEController> logger)
         {
             _httpClient = httpClientFactory.CreateClient();
             _configuration = configuration;
             _logger = logger;
-
             _apiHost = _configuration["dotCMS:ApiHost"];
-            _apiToken = _configuration["dotCMS:ApiToken"];
-            _username = _configuration["dotCMS:ApiUserName"];
-            _password = _configuration["dotCMS:ApiPassword"];
+            _apiAuth = string.IsNullOrEmpty(_configuration["dotCMS:ApiToken"]) 
+                ? "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(_configuration["dotCMS:ApiUserName"] + ":" + _configuration["dotCMS:ApiPassword"]))
+                : "Bearer " + _configuration["dotCMS:ApiToken"];
+
+            
 
             // Log when the controller is constructed to verify it's being registered
             _logger.LogInformation("DotCmsUVEController constructed");
         }
 
-        [HttpGet]
+        [HttpGet, HttpPost]
         public async Task<IActionResult> Index(string catchAll)
         {
             _logger.LogInformation($"DotCmsUVEController.Index called with path: '{catchAll}'");
@@ -59,24 +58,9 @@ namespace RazorPagesDotCMS.Controllers
 
                 var request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
                 
-                // Add authentication
-                if (!string.IsNullOrEmpty(_apiToken))
-                {
-                    // Use Bearer token authentication if available
-                    _logger.LogInformation("Using Bearer token authentication");
-                    request.Headers.Add("Authorization", $"Bearer {_apiToken}");
-                }
-                else if (!string.IsNullOrEmpty(_username) && !string.IsNullOrEmpty(_password))
-                {
-                    // Fall back to Basic authentication if username and password are available
-                    _logger.LogInformation("Using Basic authentication");
-                    var authValue = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_username}:{_password}"));
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Basic", authValue);
-                }
-                else
-                {
-                    _logger.LogWarning("No authentication credentials available");
-                }
+                request.Headers.Add("Authorization", _apiAuth);
+    
+
 
                 // Send the request to dotCMS
                 var response = await _httpClient.SendAsync(request);
