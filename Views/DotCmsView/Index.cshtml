@@ -1,0 +1,119 @@
+@model RazorPagesDotCMS.Models.PageResponse
+@{
+    ViewData["Title"] = Model?.Entity?.Page?.Title ?? "DotCMS View";
+    var layout = Model?.Entity?.Layout;
+    var page = Model?.Entity?.Page;
+    var containers = Model?.Entity?.Containers;
+}
+
+
+    <div class="body-wrapper">
+        @{
+            var mainColumn = layout?.Body;
+            var sidebar = layout?.Sidebar;
+            
+            // Handle sidebar if present
+            if (sidebar != null)
+            {
+                <div class="container">
+                    <div class="grid">
+                        @* Sidebar implementation would go here *@
+                    </div>
+                </div>
+            }
+            
+            // Process rows in the main column
+            if (mainColumn?.Rows != null && mainColumn.Rows.Count > 0)
+            {
+                int rowCount = 0;
+                
+                foreach (var row in mainColumn.Rows)
+                {
+                    rowCount++;
+                    int rowLeftOffset = 1;
+                    
+                    <section id="section-@rowCount" class="section @row.StyleClass">
+                        <div class="container">
+                            <div class="grid">
+                                @foreach (var column in row.Columns)
+                                {
+                                    string columnClass = $"col-lg-{column.Width ?? 12}";
+                                    string offsetClass = "";
+                                    
+                                    // Calculate offset
+                                    if (rowLeftOffset != column.LeftOffset)
+                                    {
+                                        int offset = column.LeftOffset.GetValueOrDefault() - rowLeftOffset;
+                                        if (offset > 0)
+                                        {
+                                            offsetClass = $"offset-lg-{offset}";
+                                        }
+                                    }
+                                    
+                                    rowLeftOffset = column.LeftOffset.GetValueOrDefault() + column.Width.GetValueOrDefault();
+                                    
+                                    <div class="@columnClass @offsetClass @column.StyleClass">
+                                        @if (column.Containers != null)
+                                        {
+                                            foreach (var container in column.Containers)
+                                            {
+                                                if (containers != null && containers.TryGetValue(container.Identifier, out var containerStructure))
+                                                {
+                                                    <div class="container-content">
+                                                        <h3>@containerStructure.Container?.Title</h3>
+                                                        
+                                                        @if (containerStructure.Contentlets != null)
+                                                        {
+                                                            foreach (var contentletEntry in containerStructure.Contentlets)
+                                                            {
+                                                                foreach (var contentlet in contentletEntry.Value)
+                                                                {
+                                                                    <div class="contentlet">
+                                                                        <h4>@contentlet.Title</h4>
+                                                                        @if (contentlet.AdditionalProperties != null)
+                                                                        {
+                                                                            <div>
+                                                                                @foreach (var prop in contentlet.AdditionalProperties)
+                                                                                {
+                                                                                    <div>
+                                                                                        <strong>@prop.Key:</strong>
+                                                                                        @if (prop.Value.ValueKind == System.Text.Json.JsonValueKind.String)
+                                                                                        {
+                                                                                            @prop.Value.GetString()
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            @prop.Value.ToString()
+                                                                                        }
+                                                                                    </div>
+                                                                                }
+                                                                            </div>
+                                                                        }
+                                                                    </div>
+                                                                }
+                                                            }
+                                                        }
+                                                    </div>
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </section>
+                }
+            }
+            else
+            {
+                <div class="container">
+                    <div class="grid">
+                        <div class="col-12">
+                            <p>No layout rows found.</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+

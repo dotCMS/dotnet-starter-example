@@ -1,0 +1,37 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "Launch RazorPagesDotCMS",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/bin/Debug/net9.0/RazorPagesDotCMS.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+                "uriFormat": "%s"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Pages"
+            },
+            "pipeTransport": {
+                "pipeProgram": "/bin/sh",
+                "pipeArgs": ["-c"],
+                "debuggerPath": "/Users/${env:USER}/vsdbg/vsdbg"
+            }
+        },
+        {
+            "name": "Attach to Process",
+            "type": "coreclr",
+            "request": "attach"
+        }
+    ]
+}

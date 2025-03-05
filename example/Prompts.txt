@@ -1,0 +1,25 @@
+
+Can you create the following Model classes that can be used with the json response in the page-test.json?
+
+We need a Model class for each of the following objects
+- Template
+- Layout
+   - Row
+      - Columns
+      - Container
+- Contentlet (can have arbitrary keys)
+- Page (can include arbitrary keys)
+- Site (can include arbitrary keys)
+- View As
+   - Visitor
+   - geo
+   - language
+   
+
+These needs to be placed in the Models folder
+   
+
+We need a catch-all controller that will accept all requests (except to URIs that start with `/dA`) and take that request and do web request to the dotCMS server specified in the `appsettings.json` dotCMS.ApiHost value.  It should call  the remote dotCMS instance /api/v1/page/json/${incomingURI} endpoint.    It should also include the ApiToken in the Authorization Bearer :header 
+
+When it gets a response, it should automatically map that response to the PageResponse Model -  the api response will look like it does in the page-test.json file.
+

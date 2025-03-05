@@ -1,0 +1,45 @@
+@model RazorPagesDotCMS.Models.PageResponse
+@{
+    ViewData["Title"] = Model?.Entity?.Page?.Title ?? "DotCMS View";
+    var layout = Model?.Entity?.Layout;
+    var page = Model?.Entity?.Page;
+    var containers = Model?.Entity?.Containers;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>@ViewData["Title"]</title>
+    <meta name="description" content="@(page?.FriendlyName ?? "")">
+    <meta name="language" content="english">
+    <meta name="author" content="dotCMS">
+    <meta name="copyright" content="dotCMS LLC, Miami Florida, US">
+
+    <link rel="stylesheet" href="/css/site.css">
+</head>
+
+@{
+    var pageTitle = page?.Title?.ToLower().Replace(" ", "-") ?? "dotcms-page";
+}
+
+<body id="@pageTitle">
+    @if (layout?.Header == true)
+    {
+        <header class="block-placeholder"></header>
+    }
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    @if (layout?.Footer == true)
+    {
+        <footer class="block-placeholder"></footer>
+    }
+        @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+
