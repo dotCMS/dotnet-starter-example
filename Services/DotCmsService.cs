@@ -46,8 +46,21 @@ namespace RazorPagesDotCMS.Services
         /// Gets a page from the dotCMS API by its path
         /// </summary>
         /// <param name="path">The page path</param>
+        /// <param name="siteId">Optional site ID</param>
+        /// <param name="mode">Optional view mode (EDIT_MODE, PREVIEW_MODE, LIVE_MODE)</param>
+        /// <param name="languageId">Optional language ID</param>
+        /// <param name="persona">Optional persona ID</param>
+        /// <param name="fireRules">Whether to fire rules (default: false)</param>
+        /// <param name="depth">Depth of the content to retrieve (default: 1)</param>
         /// <returns>The page response</returns>
-        public async Task<PageResponse> GetPageAsync(string path)
+        public async Task<PageResponse> GetPageAsync(
+            string path, 
+            string? siteId = null, 
+            PageMode? mode = PageMode.LIVE_MODE, 
+            string? languageId = null, 
+            string? persona = null, 
+            bool fireRules = false, 
+            int depth = 1)
         {
             try
             {
@@ -61,9 +74,50 @@ namespace RazorPagesDotCMS.Services
 
                 // Create the request to the dotCMS API
                 var requestUrl = $"{_apiHost}/api/v1/page/json{path}";
-                _logger.LogInformation($"Requesting page from: {requestUrl}");
+                
+                // Add query parameters if provided
+                var uriBuilder = new UriBuilder(requestUrl);
+                var query = new System.Collections.Specialized.NameValueCollection();
+                
+                if (!string.IsNullOrEmpty(siteId))
+                {
+                    query["siteId"] = siteId;
+                }
+                
+                if (mode.HasValue)
+                {
+                    query["mode"] = mode.Value.ToString();
+                }
+                
+                if (!string.IsNullOrEmpty(languageId))
+                {
+                    query["language_id"] = languageId;
+                }
+                
+                if (!string.IsNullOrEmpty(persona))
+                {
+                    query["persona"] = persona;
+                }
+                
+                // Always include fireRules and depth parameters
+                query["fireRules"] = fireRules.ToString().ToLower();
+                query["depth"] = depth.ToString();
+                
+                // Convert the query collection to a query string
+                var queryString = string.Join("&", Array.ConvertAll(
+                    query.AllKeys, 
+                    key => $"{Uri.EscapeDataString(key)}={Uri.EscapeDataString(query[key])}"
+                ));
+                
+                if (!string.IsNullOrEmpty(queryString))
+                {
+                    uriBuilder.Query = queryString;
+                }
+                
+                var finalRequestUrl = uriBuilder.Uri.ToString();
+                _logger.LogInformation($"Requesting page from: {finalRequestUrl}");
 
-                var request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+                var request = new HttpRequestMessage(HttpMethod.Get, finalRequestUrl);
                 request.Headers.Add("Authorization", _apiAuth);
 
                 // Send the request to dotCMS
