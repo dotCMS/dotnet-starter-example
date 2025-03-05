@@ -7,7 +7,6 @@ using RazorPagesDotCMS.Services;
 
 namespace RazorPagesDotCMS.Controllers
 {
-    [Route("{**catchAll}")]
     public class DotCmsUVEController : Controller
     {
         private readonly IDotCmsService _dotCmsService;
@@ -23,6 +22,7 @@ namespace RazorPagesDotCMS.Controllers
         }
 
         [HttpGet, HttpPost]
+        [Route("{**catchAll}")]
         public async Task<IActionResult> Index(
             string catchAll,
             [FromQuery] string? siteId = null,
@@ -67,6 +67,47 @@ namespace RazorPagesDotCMS.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error processing request");
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("contentlet-example/{contentletId}")]
+        public async Task<IActionResult> ContentletExample(string contentletId)
+        {
+            _logger.LogInformation($"ContentletExample called with contentletId: '{contentletId}'");
+            
+            try
+            {
+                // In a real implementation, you would fetch the contentlet from DotCMS
+                // For this example, we'll create a sample Banner contentlet
+                var contentlet = new Contentlet
+                {
+                    Title = "Example Banner",
+                    ContentType = "Banner",
+                    AdditionalProperties = new System.Collections.Generic.Dictionary<string, System.Text.Json.JsonElement>()
+                };
+
+                // Add sample properties that a Banner might have
+                using (var jsonDoc = System.Text.Json.JsonDocument.Parse(@"{
+                    ""image"": ""/path/to/banner-image.jpg"",
+                    ""link"": ""https://www.dotcms.com"",
+                    ""altText"": ""DotCMS Banner"",
+                    ""description"": ""<p>This is an example banner created programmatically.</p>""
+                }"))
+                {
+                    foreach (var property in jsonDoc.RootElement.EnumerateObject())
+                    {
+                        contentlet.AdditionalProperties[property.Name] = property.Value.Clone();
+                    }
+                }
+
+                // Return the example view with the contentlet
+                return View("~/Views/Shared/_ContentletHelperExample.cshtml", contentlet);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing contentlet example request");
                 return StatusCode(500, ex.Message);
             }
         }

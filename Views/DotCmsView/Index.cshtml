@@ -72,28 +72,7 @@
                                                             {
                                                                 foreach (var contentlet in instanceContentlets)
                                                                 {
-                                                                    <div class="contentlet">
-                                                                        <h4>@contentlet.Title</h4>
-                                                                        @if (contentlet.AdditionalProperties != null)
-                                                                        {
-                                                                            <div>
-                                                                                @foreach (var prop in contentlet.AdditionalProperties)
-                                                                                {
-                                                                                    <div>
-                                                                                        <strong>@prop.Key:</strong>
-                                                                                        @if (prop.Value.ValueKind == System.Text.Json.JsonValueKind.String)
-                                                                                        {
-                                                                                            @prop.Value.GetString()
-                                                                                        }
-                                                                                        else
-                                                                                        {
-                                                                                            @prop.Value.ToString()
-                                                                                        }
-                                                                                    </div>
-                                                                                }
-                                                                            </div>
-                                                                        }
-                                                                    </div>
+                                                                    <contentlet-renderer contentlet="contentlet"></contentlet-renderer>
                                                                 }
                                                             }
                                                             else

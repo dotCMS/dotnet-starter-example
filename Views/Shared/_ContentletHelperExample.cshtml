@@ -1,0 +1,67 @@
+@model RazorPagesDotCMS.Models.Contentlet
+@{
+    ViewData["Title"] = "Contentlet Helper Example";
+}
+
+<div class="container">
+    <h1>Contentlet Helper Example</h1>
+    
+    <div class="example-section">
+        <h2>Using the ContentletTagHelper</h2>
+        <p>The ContentletTagHelper renders a contentlet based on its ContentType:</p>
+        
+        <div class="example-code">
+<pre>
+&lt;contentlet-renderer contentlet="Model"&gt;&lt;/contentlet-renderer&gt;
+</pre>
+        </div>
+        
+        <div class="example-result">
+            <h3>Result:</h3>
+            <contentlet-renderer contentlet="Model"></contentlet-renderer>
+        </div>
+    </div>
+    
+    <div class="example-section">
+        <h2>How It Works</h2>
+        <p>The ContentletTagHelper:</p>
+        <ol>
+            <li>Takes a contentlet as input</li>
+            <li>Checks the contentlet's ContentType property</li>
+            <li>Looks for a matching partial view named ContentTypes/{ContentType}.cshtml</li>
+            <li>Renders that partial view with the contentlet as the model</li>
+            <li>Falls back to generic rendering if no matching view is found</li>
+        </ol>
+    </div>
+    
+    <div class="example-section">
+        <h2>Creating Content Type Views</h2>
+        <p>To create a view for a specific content type:</p>
+        <ol>
+            <li>Create a new .cshtml file in /Views/Shared/ContentTypes/</li>
+            <li>Name it after the ContentType (e.g., Banner.cshtml for "Banner" content type)</li>
+            <li>Use @@model RazorPagesDotCMS.Models.Contentlet at the top</li>
+            <li>Access standard properties directly (e.g., @@Model.Title)</li>
+            <li>Access custom fields through @@Model.AdditionalProperties</li>
+        </ol>
+    </div>
+    
+    <div class="example-section">
+        <h2>Example: Programmatic Usage</h2>
+        <p>You can also use the ContentletTagHelper programmatically in your controllers:</p>
+        
+        <div class="example-code">
+<pre>
+// In your controller
+public IActionResult RenderContentlet(string contentletId)
+{
+    // Fetch the contentlet from DotCMS
+    var contentlet = _dotCmsService.GetContentletById(contentletId);
+    
+    // Pass it to a view
+    return View("_ContentletHelperExample", contentlet);
+}
+</pre>
+        </div>
+    </div>
+</div>
