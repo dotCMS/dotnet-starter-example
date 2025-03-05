@@ -5,6 +5,9 @@ builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews(); // Changed from AddControllers to AddControllersWithViews
 builder.Services.AddHttpClient();
 
+// Register DotCMS service
+builder.Services.AddScoped<RazorPagesDotCMS.Services.IDotCmsService, RazorPagesDotCMS.Services.DotCmsService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

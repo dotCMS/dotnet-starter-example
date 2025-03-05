@@ -64,9 +64,13 @@
                                                         
                                                         @if (containerStructure.Contentlets != null)
                                                         {
-                                                            foreach (var contentletEntry in containerStructure.Contentlets)
+                                                            // Get the container instance ID to filter contentlets
+                                                            string containerInstanceId = container.ContainerInstanceId;
+                                                            
+                                                            // Check if this container instance has contentlets
+                                                            if (containerStructure.Contentlets.TryGetValue(containerInstanceId, out var instanceContentlets))
                                                             {
-                                                                foreach (var contentlet in contentletEntry.Value)
+                                                                foreach (var contentlet in instanceContentlets)
                                                                 {
                                                                     <div class="contentlet">
                                                                         <h4>@contentlet.Title</h4>
@@ -92,6 +96,12 @@
                                                                     </div>
                                                                 }
                                                             }
+                                                            else
+                                                            {
+                                                                <div class="no-contentlets">
+                                                                    <p>No contentlets found for this container instance.</p>
+                                                                </div>
+                                                            }
                                                         }
                                                     </div>
                                                 }
@@ -116,4 +126,3 @@
             }
         }
     </div>
-

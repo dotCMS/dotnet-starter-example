@@ -13,8 +13,7 @@ namespace RazorPagesDotCMS.Models
         [JsonPropertyName("modDate")]
         public long? ModDate { get; set; }
 
-        [JsonPropertyName("extension")]
-        public string? Extension { get; set; }
+
 
         [JsonPropertyName("publishDate")]
         public long? PublishDate { get; set; }

@@ -76,5 +76,12 @@ namespace RazorPagesDotCMS.Models
 
         [JsonPropertyName("historyUUIDs")]
         public List<string>? HistoryUUIDs { get; set; }
+        
+        /// <summary>
+        /// Gets the container instance UUID to use for filtering contentlets.
+        /// This is typically "uuid-X" where X is the value of the Uuid property.
+        /// </summary>
+        [JsonIgnore]
+        public string ContainerInstanceId => $"uuid-{Uuid}";
     }
 }

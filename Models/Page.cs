@@ -6,18 +6,12 @@ namespace RazorPagesDotCMS.Models
 {
     public class Page
     {
-        // Common properties found in the JSON example
-        [JsonPropertyName("__icon__")]
-        public string? Icon { get; set; }
 
         [JsonPropertyName("archived")]
         public bool? Archived { get; set; }
 
         [JsonPropertyName("baseType")]
         public string? BaseType { get; set; }
-
-        [JsonPropertyName("cachettl")]
-        public string? Cachettl { get; set; }
 
         [JsonPropertyName("canEdit")]
         public bool? CanEdit { get; set; }
@@ -61,9 +55,6 @@ namespace RazorPagesDotCMS.Models
         [JsonPropertyName("hostName")]
         public string? HostName { get; set; }
 
-        [JsonPropertyName("httpsRequired")]
-        public bool? HttpsRequired { get; set; }
-
         [JsonPropertyName("identifier")]
         public string? Identifier { get; set; }
 
@@ -100,8 +91,6 @@ namespace RazorPagesDotCMS.Models
         [JsonPropertyName("name")]
         public string? Name { get; set; }
 
-        [JsonPropertyName("ogType")]
-        public string? OgType { get; set; }
 
         [JsonPropertyName("owner")]
         public string? Owner { get; set; }
@@ -129,18 +118,6 @@ namespace RazorPagesDotCMS.Models
 
         [JsonPropertyName("shortyId")]
         public string? ShortyId { get; set; }
-
-        [JsonPropertyName("shortyLive")]
-        public string? ShortyLive { get; set; }
-
-        [JsonPropertyName("shortyWorking")]
-        public string? ShortyWorking { get; set; }
-
-        [JsonPropertyName("sitemapImportance")]
-        public string? SitemapImportance { get; set; }
-
-        [JsonPropertyName("sortOrder")]
-        public int? SortOrder { get; set; }
 
         [JsonPropertyName("stInode")]
         public string? StInode { get; set; }
