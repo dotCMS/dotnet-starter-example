@@ -68,6 +68,60 @@ The application acts as a proxy for dotCMS pages. When a request is made to any 
 2. Parse the response into the appropriate models
 3. Render the page using the Razor view
 
+### TagHelpers
+
+The SDK includes custom TagHelpers to simplify common UI components:
+
+#### HeaderTagHelper
+
+The `HeaderTagHelper` provides a reusable header component that can be conditionally displayed:
+
+```cshtml
+<!-- Basic usage with default content -->
+<header-section show="@(layout?.Header == true)" title="My Site"></header-section>
+
+<!-- With custom content -->
+<header-section show="@(layout?.Header == true)">
+    <div class="custom-header">
+        <h1>Welcome to My Site</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About</a></li>
+            </ul>
+        </nav>
+    </div>
+</header-section>
+```
+
+#### FooterTagHelper
+
+The `FooterTagHelper` provides a reusable footer component that can be conditionally displayed:
+
+```cshtml
+<!-- Basic usage with default content -->
+<footer-section show="@(layout?.Footer == true)" copyright="My Site"></footer-section>
+
+<!-- With custom content -->
+<footer-section show="@(layout?.Footer == true)">
+    <div class="custom-footer">
+        <div class="footer-info">
+            <h3>My Site</h3>
+            <p>Your content management solution</p>
+        </div>
+        <div class="footer-links">
+            <h4>Quick Links</h4>
+            <ul>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+        </div>
+    </div>
+</footer-section>
+```
+
+See example files in `Views/Shared/_HeaderExample.cshtml` and `Views/Shared/_FooterExample.cshtml` for more details.
+
 ## Development
 
 To run the application locally:

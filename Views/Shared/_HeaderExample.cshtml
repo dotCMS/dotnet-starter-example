@@ -1,0 +1,23 @@
+@model RazorPagesDotCMS.Models.PageResponse
+@{
+    var layout = Model?.Entity?.Layout;
+    var page = Model?.Entity?.Page;
+}
+
+@* Example 1: Basic usage with default content *@
+<header-section show="@(layout?.Header == true)" title="@(page?.Title ?? "DotCMS")"></header-section>
+
+@* Example 2: With custom content *@
+<header-section show="@(layout?.Header == true)" title="@(page?.Title ?? "DotCMS")">
+    <div class="custom-header">
+        <h1>@(page?.Title ?? "Welcome to DotCMS")</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/destinations">Destinations</a></li>
+                <li><a href="/services">Services</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+        </nav>
+    </div>
+</header-section>

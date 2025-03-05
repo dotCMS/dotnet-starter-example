@@ -25,21 +25,15 @@
 }
 
 <body id="@pageTitle">
-    @if (layout?.Header == true)
-    {
-        <header class="block-placeholder"></header>
-    }
+    <header-section show="@(layout?.Header == true)" title="@(page?.Title ?? "DotCMS")"></header-section>
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    @if (layout?.Footer == true)
-    {
-        <footer class="block-placeholder"></footer>
-    }
-        @await RenderSectionAsync("Scripts", required: false)
+    <footer-section show="@(layout?.Footer == true)" copyright="@(page?.Title ?? "DotCMS")"></footer-section>
+    
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-
