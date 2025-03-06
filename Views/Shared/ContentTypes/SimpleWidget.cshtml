@@ -1,0 +1,11 @@
+@model RazorPagesDotCMS.Models.Contentlet
+@{
+    // Extract common banner properties from AdditionalProperties
+    var imageUrl = "https://demo.dotcms.com/dA/" + Model.Identifier + "/image/1200maxw/1200cw/570ch/80q/13ro/" + Model.Title;
+        
+
+}
+
+<div class="simple-widget">
+    Widget: @Model.Title
+</div>

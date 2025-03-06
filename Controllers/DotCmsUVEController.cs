@@ -73,7 +73,7 @@ namespace RazorPagesDotCMS.Controllers
 
         [HttpGet]
         [Route("contentlet-example/{contentletId}")]
-        public async Task<IActionResult> ContentletExample(string contentletId)
+        public IActionResult ContentletExample(string contentletId)
         {
             _logger.LogInformation($"ContentletExample called with contentletId: '{contentletId}'");
             

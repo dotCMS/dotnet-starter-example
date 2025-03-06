@@ -1,0 +1,38 @@
+@model RazorPagesDotCMS.Models.Contentlet
+@{
+    // Extract common banner properties from AdditionalProperties
+    var imageUrl = "https://demo.dotcms.com/dA/" + Model.Identifier + "/image/1200maxw/80q/" + Model.Title;
+        
+    var urlMap = Model.AdditionalProperties?.TryGetValue("urlMap", out var urlMapValue) == true && urlMapValue.ValueKind == System.Text.Json.JsonValueKind.String
+        ? urlMapValue.GetString()
+        : "";
+
+    var altTag = Model.AdditionalProperties?.TryGetValue("altTag", out var altTagValue) == true && altTagValue.ValueKind == System.Text.Json.JsonValueKind.String
+        ? altTagValue.GetString()
+        : Model.Title;
+        
+    var body = Model.AdditionalProperties?.TryGetValue("body", out var bodyValue) == true && bodyValue.ValueKind == System.Text.Json.JsonValueKind.String
+        ? bodyValue.GetString()
+        : Model.Title;
+        
+
+}
+
+<div class="activity">
+    @if (!string.IsNullOrEmpty(imageUrl))
+    {
+        
+        <img src="@imageUrl" alt="@altTag" style="width:100%;" class="activity-image" />
+    }
+    <div class="activity-content">
+        @if (!string.IsNullOrEmpty(Model.Title))
+        {
+            <h2 class="activity-title">@Model.Title</h2>
+        }
+        @if (!string.IsNullOrEmpty(body))
+        {
+            
+        }
+    </div>
+</div>
+   

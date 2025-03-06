@@ -5,6 +5,9 @@ builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews(); // Changed from AddControllers to AddControllersWithViews
 builder.Services.AddHttpClient();
 
+// Register LazyCache
+builder.Services.AddSingleton<LazyCache.IAppCache>(new LazyCache.CachingService());
+
 // Register DotCMS service
 builder.Services.AddScoped<RazorPagesDotCMS.Services.IDotCmsService, RazorPagesDotCMS.Services.DotCmsService>();
 

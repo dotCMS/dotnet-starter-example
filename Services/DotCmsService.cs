@@ -1,12 +1,7 @@
-using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using RazorPagesDotCMS.Models;
+using LazyCache;
 
 namespace RazorPagesDotCMS.Services
 {
@@ -21,19 +16,20 @@ namespace RazorPagesDotCMS.Services
 
         private readonly string? _apiHost;
         private readonly string? _apiAuth;
-
+        private readonly IAppCache cache;
         /// <summary>
         /// Initializes a new instance of the <see cref="DotCmsService"/> class.
         /// </summary>
         /// <param name="httpClientFactory">The HTTP client factory</param>
         /// <param name="configuration">The configuration</param>
         /// <param name="logger">The logger</param>
-        public DotCmsService(IHttpClientFactory httpClientFactory, IConfiguration configuration, ILogger<DotCmsService> logger)
+        /// <param name="cache">LazyCache</param>
+        public DotCmsService(IHttpClientFactory httpClientFactory, IConfiguration configuration, ILogger<DotCmsService> logger, IAppCache cache)
         {
             _httpClient = httpClientFactory.CreateClient();
             _configuration = configuration;
             _logger = logger;
-            
+            this.cache = cache;
             _apiHost = _configuration["dotCMS:ApiHost"];
             _apiAuth = string.IsNullOrEmpty(_configuration["dotCMS:ApiToken"]) 
                 ? "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(_configuration["dotCMS:ApiUserName"] + ":" + _configuration["dotCMS:ApiPassword"]))
@@ -98,6 +94,9 @@ namespace RazorPagesDotCMS.Services
                 {
                     query["persona"] = persona;
                 }
+
+
+
                 
                 // Always include fireRules and depth parameters
                 query["fireRules"] = fireRules.ToString().ToLower();
@@ -106,7 +105,9 @@ namespace RazorPagesDotCMS.Services
                 // Convert the query collection to a query string
                 var queryString = string.Join("&", Array.ConvertAll(
                     query.AllKeys, 
-                    key => $"{Uri.EscapeDataString(key)}={Uri.EscapeDataString(query[key])}"
+                    key => key != null 
+                        ? $"{Uri.EscapeDataString(key)}={Uri.EscapeDataString(query[key] ?? string.Empty)}"
+                        : string.Empty
                 ));
                 
                 if (!string.IsNullOrEmpty(queryString))
@@ -114,37 +115,52 @@ namespace RazorPagesDotCMS.Services
                     uriBuilder.Query = queryString;
                 }
                 
-                var finalRequestUrl = uriBuilder.Uri.ToString();
-                _logger.LogInformation($"Requesting page from: {finalRequestUrl}");
+                string finalRequestUrl = uriBuilder.Uri.ToString();
+                int cacheSeconds = PageMode.LIVE_MODE == mode ? 60 : 0;
 
-                var request = new HttpRequestMessage(HttpMethod.Get, finalRequestUrl);
-                request.Headers.Add("Authorization", _apiAuth);
-
-                // Send the request to dotCMS
-                var response = await _httpClient.SendAsync(request);
-
-                // Check if the response is successful
-                if (!response.IsSuccessStatusCode)
+                
+                // Use GetOrAddAsync with an async delegate
+                return await cache.GetOrAdd(finalRequestUrl, async () => 
                 {
-                    _logger.LogWarning($"dotCMS API returned status code: {response.StatusCode}");
-                    throw new HttpRequestException($"dotCMS API returned status code: {response.StatusCode}");
-                }
+                    try
+                    {
+                        _logger.LogInformation($"Requesting page from: {finalRequestUrl}");
 
-                // Read the response content
-                var content = await response.Content.ReadAsStringAsync();
+                        var request = new HttpRequestMessage(HttpMethod.Get, finalRequestUrl);
+                        request.Headers.Add("Authorization", _apiAuth);
 
-                // Deserialize the response to PageResponse model
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                };
+                        // Send the request to dotCMS
+                        var response = await _httpClient.SendAsync(request);
 
-                var pageResponse = JsonSerializer.Deserialize<PageResponse>(content, options);
-                return pageResponse ?? throw new JsonException("Failed to deserialize page response");
+                        // Check if the response is successful
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            _logger.LogWarning($"dotCMS API returned status code: {response.StatusCode}");
+                            throw new HttpRequestException($"dotCMS API returned status code: {response.StatusCode}");
+                        }
+
+                        // Read the response content
+                        var content = await response.Content.ReadAsStringAsync();
+
+                        // Deserialize the response to PageResponse model
+                        var options = new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        };
+
+                        var pageResponse = JsonSerializer.Deserialize<PageResponse>(content, options);
+                        return pageResponse ?? throw new JsonException("Failed to deserialize page response");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error getting page from dotCMS API");
+                        throw;
+                    }
+                }, DateTimeOffset.Now.AddSeconds(cacheSeconds));   
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting page from dotCMS API");
+                _logger.LogError(ex, "Error in GetPageAsync");
                 throw;
             }
         }

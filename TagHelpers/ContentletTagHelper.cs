@@ -98,7 +98,7 @@ namespace RazorPagesDotCMS.TagHelpers
         {
             var content = $"<div class=\"contentlet contentlet-{contentlet.ContentType?.ToLower()}\">";
             content += $"<h4>{contentlet.Title}</h4>";
-            content += $"<div style='margin:4px;'>No component found for {contentlet.ContentType}</div>";
+            content += $"<div style='margin:4px;'>No component found for <span style='font-family:monospace'>{contentlet.ContentType}</span></div>";
             if (contentlet.AdditionalProperties != null)
             {
                 content += "<div class=\"contentlet-properties\">";
