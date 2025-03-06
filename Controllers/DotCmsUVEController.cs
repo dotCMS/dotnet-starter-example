@@ -51,15 +51,31 @@ namespace RazorPagesDotCMS.Controllers
                 _logger.LogInformation($"Query parameters: siteId={siteId}, mode={mode}, language_id={language_id}, " +
                                       $"persona={persona}, fireRules={fireRules}, depth={depth}");
                 
-                // Get the page from the dotCMS API using our service with all parameters
-                var pageResponse = await _dotCmsService.GetPageAsync(
-                    catchAll,
-                    siteId,
-                    pageMode,
-                    language_id,
-                    persona,
-                    fireRules,
-                    depth);
+                PageResponse pageResponse;
+                try
+                {
+                    // Try to get the page using GraphQL first
+                    _logger.LogInformation("Attempting to get page using GraphQL API");
+                    pageResponse = await _dotCmsService.GetPageGraphqlAsync(
+                        catchAll,
+                        siteId,
+                        pageMode,
+                        language_id,
+                        persona,
+                        fireRules);
+                }
+                catch (Exception ex)
+                {
+                    // If GraphQL fails, fall back to the REST API
+                    _logger.LogWarning(ex, "GraphQL API failed, falling back to REST API");
+                    pageResponse = await _dotCmsService.GetPageAsync(
+                        catchAll,
+                        siteId,
+                        pageMode,
+                        language_id,
+                        persona,
+                        fireRules);
+                }
 
                 // Return the view with the pageResponse
                 return View("~/Views/DotCmsView/Index.cshtml", pageResponse);

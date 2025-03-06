@@ -1,0 +1,417 @@
+{
+  "data": {
+    "page": {
+      "_map": {
+        "cachettl": "15",
+        "publishDate": 1718303172191,
+        "type": "htmlpage",
+        "ogType": "website",
+        "httpsRequired": false,
+        "inode": "b177b606-3177-42c4-9570-f62a0aed37df",
+        "path": "/activities/activity-detail-page",
+        "identifier": "e5f131d2-1952-4596-bbbf-28fb28021b68",
+        "publishUserName": "Admin User",
+        "publishUser": "dotcms.org.1",
+        "__icon__": "pageIcon",
+        "folder": "513aec5b-3aaa-4df2-b306-83e77ba334d9",
+        "hasTitleImage": false,
+        "sortOrder": 0,
+        "template": "31f4c794-c769-4929-9d5d-7c383408c65c",
+        "hostName": "demo.dotcms.com",
+        "extension": "page",
+        "canRead": false,
+        "pageURI": "/activities/activity-detail-page",
+        "canEdit": false,
+        "archived": false,
+        "friendlyName": "Activities",
+        "workingInode": "b177b606-3177-42c4-9570-f62a0aed37df",
+        "url": "/activities/activity-detail-page",
+        "hasLiveVersion": true,
+        "deleted": false,
+        "pageUrl": "activity-detail-page",
+        "shortyWorking": "b177b60631",
+        "language": {
+          "languageId": 1,
+          "language": "English",
+          "languageCode": "en",
+          "country": "United States",
+          "countryCode": "US",
+          "languageFlag": "en_US",
+          "isoCode": "en-us",
+          "id": 1
+        },
+        "mimeType": "application/dotpage",
+        "host": "48190c8c-42c4-46af-8d1a-0cd5db894797",
+        "locked": false,
+        "stInode": "c541abb1-69b3-4bc5-8430-5e09e5239cc8",
+        "contentType": "htmlpageasset",
+        "sitemap": "true",
+        "creationDate": 1599065446544,
+        "ogImage": {},
+        "sitemapImportance": "0.7",
+        "liveInode": "b177b606-3177-42c4-9570-f62a0aed37df",
+        "name": "activity-detail-page",
+        "shortyLive": "b177b60631",
+        "modDate": 1718303171876,
+        "canSeeRules": false,
+        "searchEngineIndex": "index,follow,snippet",
+        "title": "Activity Detail Page",
+        "baseType": "HTMLPAGE",
+        "ownerName": "Admin User",
+        "working": true,
+        "canLock": false,
+        "live": true,
+        "owner": "dotcms.org.1",
+        "isContentlet": true,
+        "languageId": 1,
+        "URLMapContent": {
+          "contentlet": {
+            "lowIndexPriority": false,
+            "variantId": "DEFAULT",
+            "versionType": "content",
+            "modDate": 1717529061985,
+            "working": true,
+            "keyValue": false,
+            "categoryId": "56a23253-840f-43ee-98ff-06508b99e43d",
+            "versionId": "6a8102b5-fdb0-4ad5-9a5d-e982bcdb54c8",
+            "modUser": "dotcms.org.1",
+            "titleImage": {
+              "clazz": "com.dotcms.contenttype.model.field.ImmutableImageField",
+              "searchable": false,
+              "unique": false,
+              "indexed": false,
+              "listed": false,
+              "readOnly": false,
+              "forceIncludeInApi": false,
+              "owner": null,
+              "id": "585b47cb418d97a5e4a8740e1a16af74",
+              "modDate": 1741262564000,
+              "name": "Image",
+              "relationType": null,
+              "required": false,
+              "variable": "image",
+              "sortOrder": 8,
+              "values": null,
+              "regexCheck": null,
+              "hint": null,
+              "defaultValue": null,
+              "fixed": false,
+              "contentTypeId": "778f3246-9b11-4a2a-a101-e7fdf111bdad",
+              "dbColumn": "text3",
+              "iDate": 1717089559000,
+              "dataType": "TEXT"
+            },
+            "folder": "SYSTEM_FOLDER",
+            "dotAsset": false,
+            "persona": false,
+            "host": "48190c8c-42c4-46af-8d1a-0cd5db894797",
+            "form": false,
+            "htmlpage": false,
+            "vanityUrl": false,
+            "indexPolicyDependencies": "DEFER",
+            "structureInode": "778f3246-9b11-4a2a-a101-e7fdf111bdad",
+            "permissionId": "6a8102b5-fdb0-4ad5-9a5d-e982bcdb54c8",
+            "permissionType": "com.dotmarketing.portlets.contentlet.model.Contentlet",
+            "contentTypeId": "778f3246-9b11-4a2a-a101-e7fdf111bdad",
+            "languageVariable": false,
+            "systemHost": false,
+            "sortOrder": 0,
+            "identifier": "6a8102b5-fdb0-4ad5-9a5d-e982bcdb54c8",
+            "inode": "56a23253-840f-43ee-98ff-06508b99e43d",
+            "languageId": 1,
+            "new": false,
+            "fileAsset": false,
+            "archived": false,
+            "locked": false,
+            "owner": "dotcms.org.1",
+            "live": true,
+            "title": "Skiing",
+            "name": "Skiing",
+            "type": "contentlet"
+          },
+          "identifier": {
+            "id": "e5f131d2-1952-4596-bbbf-28fb28021b68",
+            "assetName": "activity-detail-page",
+            "assetType": "contentlet",
+            "parentPath": "/activities/",
+            "hostId": "48190c8c-42c4-46af-8d1a-0cd5db894797",
+            "sysPublishDate": null,
+            "sysExpireDate": null,
+            "owner": "dotcms.org.1",
+            "createDate": 1599065446544,
+            "assetSubType": "htmlpageasset",
+            "parentPermissionable": null
+          },
+          "urlMapped": "/activities/skiing",
+          "detailtPageUri": "/activities/activity-detail-page"
+        },
+        "statusIcons": "<span class='greyDotIcon' style='opacity:.4'></span><span class='liveIcon'></span>",
+        "shortyId": "e5f131d219",
+        "modUserName": "Admin User",
+        "titleImage": "TITLE_IMAGE_NOT_FOUND",
+        "modUser": "dotcms.org.1"
+      },
+      "urlContentMap": {
+        "identifier": "6a8102b5-fdb0-4ad5-9a5d-e982bcdb54c8",
+        "modDate": "2024-06-04 19:24:21.985",
+        "publishDate": "2024-06-04 19:24:22.052",
+        "creationDate": "2020-09-02 16:42:09.068",
+        "title": "Skiing",
+        "baseType": "CONTENT",
+        "inode": "56a23253-840f-43ee-98ff-06508b99e43d",
+        "archived": false,
+        "_map": {
+          "publishDate": 1717529062052,
+          "language": {
+            "languageId": 1,
+            "language": "English",
+            "languageCode": "en",
+            "country": "United States",
+            "countryCode": "US",
+            "languageFlag": "en_US",
+            "isoCode": "en-us",
+            "id": 1
+          },
+          "body": "<p>Admiring the dramatic mountain landscape from atop the ski lift, feeling the cold air nipping at your cheeks, experiencing the rush of adrenaline as you carve the snow &ndash; there's nothing quite like a day on the slopes. And while the mountain conditions are top priority, our ski vacation spots also boast charming towns and lively apr&egrave;s-ski scenes to explore. Factors like resort variety, scenic beauty, annual snowfall and overall atmosphere, we have the world's best places to ski. Wondering where to go? Take a peek at the destinations, and don't forget to vote for your favorites.</p>",
+          "inode": "56a23253-840f-43ee-98ff-06508b99e43d",
+          "host": "48190c8c-42c4-46af-8d1a-0cd5db894797",
+          "locked": false,
+          "stInode": "778f3246-9b11-4a2a-a101-e7fdf111bdad",
+          "contentType": "Activity",
+          "altTag": "Skiing",
+          "identifier": "6a8102b5-fdb0-4ad5-9a5d-e982bcdb54c8",
+          "image": {},
+          "urlTitle": "skiing",
+          "publishUserName": "Admin User",
+          "publishUser": "dotcms.org.1",
+          "creationDate": 1599064929068,
+          "tags": "skiing,winterenthusiast",
+          "folder": "SYSTEM_FOLDER",
+          "hasTitleImage": true,
+          "sortOrder": 0,
+          "hostName": "demo.dotcms.com",
+          "modDate": 1717529061985,
+          "description": "Skiing is the best family sport because it's so much more than a sport: it's a medium of shared experiences in a living, breathing culture of connection.",
+          "title": "Skiing",
+          "baseType": "CONTENT",
+          "archived": false,
+          "ownerName": "Admin User",
+          "working": true,
+          "live": true,
+          "owner": "dotcms.org.1",
+          "languageId": 1,
+          "URL_MAP_FOR_CONTENT": "/activities/skiing",
+          "shortyId": "6a8102b5fd",
+          "url": "/content.97dded8a-f260-4730-aa99-56c9ea01c16d",
+          "titleImage": "image",
+          "modUserName": "Admin User",
+          "urlMap": "/activities/skiing",
+          "hasLiveVersion": true,
+          "modUser": "dotcms.org.1"
+        },
+        "urlMap": "/activities/skiing",
+        "working": true,
+        "locked": false,
+        "contentType": "Activity",
+        "live": true
+      },
+      "title": "Activity Detail Page",
+      "friendlyName": "Activities",
+      "description": null,
+      "tags": null,
+      "canEdit": true,
+      "canLock": true,
+      "canRead": true,
+      "template": {
+        "inode": "2535a248-9ad6-4668-b1f3-fd8d1c72e8a5",
+        "identifier": "31f4c794-c769-4929-9d5d-7c383408c65c",
+        "drawed": true
+      },
+      "containers": [
+        {
+          "path": "//demo.dotcms.com/application/containers/default/",
+          "identifier": "69b3d24d-7e80-4be6-b04a-d352d16493ee",
+          "maxContentlets": 25,
+          "containerStructures": [
+            {
+              "contentTypeVar": "Images"
+            },
+            {
+              "contentTypeVar": "calendarEvent"
+            },
+            {
+              "contentTypeVar": "CallToAction"
+            },
+            {
+              "contentTypeVar": "Video"
+            },
+            {
+              "contentTypeVar": "webPageContent"
+            },
+            {
+              "contentTypeVar": "Activity"
+            },
+            {
+              "contentTypeVar": "Blog"
+            },
+            {
+              "contentTypeVar": "YouTube"
+            },
+            {
+              "contentTypeVar": "Product"
+            }
+          ],
+          "containerContentlets": [
+            {
+              "uuid": "uuid-1562770692396",
+              "contentlets": [
+                {
+                  "identifier": "e729f491-2180-4a06-8b00-8c1b48cacd55",
+                  "modDate": "2020-09-02 16:48:02.87",
+                  "publishDate": "2020-09-02 16:48:02.895",
+                  "creationDate": "2020-09-02 16:48:02.87",
+                  "title": "Activity Detail Page",
+                  "baseType": "WIDGET",
+                  "inode": "d1920f02-1179-485f-9fc3-9ee74fd92490",
+                  "archived": false,
+                  "_map": {
+                    "publishDate": 1599065282895,
+                    "language": {
+                      "languageId": 1,
+                      "language": "English",
+                      "languageCode": "en",
+                      "country": "United States",
+                      "countryCode": "US",
+                      "languageFlag": "en_US",
+                      "isoCode": "en-us",
+                      "id": 1
+                    },
+                    "inode": "d1920f02-1179-485f-9fc3-9ee74fd92490",
+                    "path": "/content.4de4a7c6-9ece-4c70-9430-2c25efa5a5ca",
+                    "host": "48190c8c-42c4-46af-8d1a-0cd5db894797",
+                    "locked": false,
+                    "stInode": "9e0a09af-a7be-4c83-9d5e-c6cc9c050219",
+                    "contentType": "VtlInclude",
+                    "identifier": "e729f491-2180-4a06-8b00-8c1b48cacd55",
+                    "publishUserName": "Admin User",
+                    "publishUser": "dotcms.org.1",
+                    "creationDate": 1599065282870,
+                    "vtlFile": {
+                      "identifier": "826470c6-2a89-48ac-ae7e-6b8152697fb9",
+                      "parent": "753dc51c-459a-46d1-a0f5-0979f286257e",
+                      "extension": "vtl",
+                      "isContentlet": true,
+                      "description": "activities",
+                      "__icon__": "vtlIcon",
+                      "mimeType": "text/plain; charset=ISO-8859-1",
+                      "statusIcons": "<span class='greyDotIcon' style='opacity:.4'></span><span class='liveIcon'></span>",
+                      "type": "file_asset",
+                      "metaData": {
+                        "contentType": "text/plain; charset=ISO-8859-1",
+                        "editableAsText": true,
+                        "fileSize": 5368,
+                        "isImage": false,
+                        "length": 5368,
+                        "modDate": 1741262544817,
+                        "name": "activities-detail.vtl",
+                        "path": "d/f/dfe282dd-871c-48af-afaa-baadfb28f0da/fileAsset/activities-detail.vtl",
+                        "sha256": "df8abf265b86a0e100ab6f1c0f42dedc357419a3d29367dbdc881cf0eb3bf2f5",
+                        "title": "activities-detail.vtl",
+                        "version": 20220201
+                      },
+                      "path": "/application/vtl/activities/",
+                      "size": 5368,
+                      "name": "activities-detail.vtl",
+                      "underlyingFileName": "activities-detail.vtl"
+                    },
+                    "widgetTitle": "Activity Detail Page",
+                    "folder": "SYSTEM_FOLDER",
+                    "hasTitleImage": false,
+                    "sortOrder": 0,
+                    "hostName": "demo.dotcms.com",
+                    "modDate": 1599065282870,
+                    "title": "Activity Detail Page",
+                    "baseType": "WIDGET",
+                    "archived": false,
+                    "ownerName": "Admin User",
+                    "working": true,
+                    "live": true,
+                    "owner": "dotcms.org.1",
+                    "languageId": 1,
+                    "widgetCodeJSON": {},
+                    "shortyId": "e729f49121",
+                    "url": "/content.4de4a7c6-9ece-4c70-9430-2c25efa5a5ca",
+                    "titleImage": "TITLE_IMAGE_NOT_FOUND",
+                    "modUserName": "Admin User",
+                    "hasLiveVersion": true,
+                    "modUser": "dotcms.org.1",
+                    "widgetCode": "#set($myFile = $dotcontent.find($!{vtlFile}))\r\n#set($myHost=$myFile.host.hostName)\r\n#set($filePath=$filetool.getFile(\"$!{vtlFile}\",true))\r\n\r\n#dotParse(\"//$myHost$filePath.getURI()\")"
+                  },
+                  "urlMap": null,
+                  "working": true,
+                  "locked": false,
+                  "contentType": "VtlInclude",
+                  "live": true
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "layout": {
+        "header": true,
+        "footer": true,
+        "sidebar": null,
+        "body": {
+          "rows": [
+            {
+              "columns": [
+                {
+                  "leftOffset": 1,
+                  "styleClass": null,
+                  "width": 12,
+                  "left": 0,
+                  "containers": [
+                    {
+                      "identifier": "//demo.dotcms.com/application/containers/default/",
+                      "uuid": "1562770692396"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "viewAs": {
+        "visitor": {
+          "persona": null,
+          "device": "COMPUTER",
+          "tags": [
+            {
+              "tag": "skiing",
+              "count": 130
+            }
+          ],
+          "geo": {
+            "continent": "North America",
+            "country": "United States",
+            "subdivision": "Massachusetts",
+            "city": "Andover",
+            "timezone": "America/New_York",
+            "latitude": "42.6489",
+            "longitude": "-71.1655",
+            "continentCode": "NA"
+          }
+        },
+        "language": {
+          "id": 1,
+          "languageCode": "en",
+          "countryCode": "US",
+          "language": "English",
+          "country": "United States"
+        }
+      }
+    }
+  }
+}

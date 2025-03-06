@@ -49,5 +49,8 @@ namespace RazorPagesDotCMS.Models
 
         [JsonPropertyName("viewAs")]
         public ViewAs? ViewAs { get; set; }
+
+       [JsonPropertyName("urlContentMap")]
+        public Contentlet? UrlContentMap { get; set; }
     }
 }

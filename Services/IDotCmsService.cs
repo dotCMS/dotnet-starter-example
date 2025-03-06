@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Threading.Tasks;
 using RazorPagesDotCMS.Models;
 
@@ -27,5 +28,24 @@ namespace RazorPagesDotCMS.Services
             string? personaId = null, 
             bool fireRules = false, 
             int depth = 1);
+            
+        /// <summary>
+        /// Gets a page from the dotCMS API using GraphQL
+        /// </summary>
+        /// <param name="graphqlQuery">The GraphQL query</param>
+        /// <returns>The page response</returns>
+        Task<PageResponse> GetPageGraphqlAsync(
+            string path,
+            string? siteId = null,
+            PageMode? mode = PageMode.LIVE_MODE,
+            string? languageId = null,
+            string? persona = null,
+            bool fireRules = false);
+    
+        Task<string> GetGraphqlAsync(string graphqlQuery);
+
+
+        Task<string> GetGraphqlAsync(string graphqlQuery, int cacheSeconds);
+
     }
 }
