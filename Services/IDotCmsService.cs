@@ -41,11 +41,11 @@ namespace RazorPagesDotCMS.Services
             string? languageId = null,
             string? persona = null,
             bool fireRules = false);
-    
-        Task<string> GetGraphqlAsync(string graphqlQuery);
+
+        Task<string> QueryGraphqlAsync(string graphqlQuery);
 
 
-        Task<string> GetGraphqlAsync(string graphqlQuery, int cacheSeconds);
+        Task<string> QueryGraphqlAsync(string graphqlQuery, int cacheSeconds);
 
     }
 }

@@ -187,7 +187,8 @@ namespace RazorPagesDotCMS.Services
                 PageMode newMode = (PageMode)(mode is null ? PageMode.LIVE_MODE : mode);  // Default to LIVE_MODE if not provided
                 string graphqlQuery = GetGraphqlPageQuery(path, siteId, newMode, languageId, persona, fireRules);
 
-                string content = await GetGraphqlAsync(graphqlQuery);
+                int ttlSeconds = newMode == PageMode.LIVE_MODE ? 60 : 0;
+                string content = await QueryGraphqlAsync(graphqlQuery, ttlSeconds);
 
                 // Convert the GraphQL response to PageResponse using the instance
                 return _modelHelper.ConvertGraphqlToPageResponse(content);
@@ -199,12 +200,14 @@ namespace RazorPagesDotCMS.Services
             }
         }
 
-        public async Task<string> GetGraphqlAsync(string graphqlQuery)
+        
+        public async Task<string> QueryGraphqlAsync(string graphqlQuery)
         {
-            return await GetGraphqlAsync(graphqlQuery, 0);
+            return await QueryGraphqlAsync(graphqlQuery, 0);
         }
+        
 
-        public async Task<string> GetGraphqlAsync(string graphqlQuery, int cacheSeconds)
+        public async Task<string> QueryGraphqlAsync(string graphqlQuery, int cacheSeconds)
         {
 
             try
