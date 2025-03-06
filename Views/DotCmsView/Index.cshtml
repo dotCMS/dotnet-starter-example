@@ -52,15 +52,15 @@
                                     
                                     rowLeftOffset = column.LeftOffset.GetValueOrDefault() + column.Width.GetValueOrDefault();
                                     
-                                    <div class="@columnClass @offsetClass @column.StyleClass">
+                                    <div class="@columnClass @offsetClass @column.StyleClass" style="word-break: break-all;">
                                         @if (column.Containers != null)
                                         {
                                             foreach (var container in column.Containers)
                                             {
                                                 if (containers != null && containers.TryGetValue(container.Identifier, out var containerStructure))
                                                 {
-                                                    <div class="container-content">
-                                                        <h3>@containerStructure.Container?.Title</h3>
+                                                    <fieldset class="container-content">
+                                                        <legend>@containerStructure.Container?.Title</legend>
                                                         
                                                         @if (containerStructure.Contentlets != null)
                                                         {
@@ -82,7 +82,7 @@
                                                                 </div>
                                                             }
                                                         }
-                                                    </div>
+                                                    </fieldset>
                                                 }
                                             }
                                         }
