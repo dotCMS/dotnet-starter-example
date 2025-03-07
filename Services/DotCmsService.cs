@@ -2,8 +2,6 @@ using System.Text;
 using System.Text.Json;
 using RazorPagesDotCMS.Models;
 using LazyCache;
-using System.Net;
-using Microsoft.Extensions.Logging;
 
 namespace RazorPagesDotCMS.Services
 {
@@ -41,9 +39,9 @@ namespace RazorPagesDotCMS.Services
                 : "Bearer " + _configuration["dotCMS:ApiToken"];
 
             _logger.LogInformation("DotCmsService constructed");
-            
+
             // Create a logger factory for ModelHelper
-            var loggerFactory = LoggerFactory.Create(builder => 
+            var loggerFactory = LoggerFactory.Create(builder =>
             {
                 builder.AddConsole();
             });
@@ -63,18 +61,12 @@ namespace RazorPagesDotCMS.Services
         /// <param name="depth">Depth of the content to retrieve (default: 1)</param>
         /// <returns>The page response</returns>
         public async Task<PageResponse> GetPageAsync(
-            string path,
-            string? siteId = null,
-            PageMode? mode = PageMode.LIVE_MODE,
-            string? languageId = null,
-            string? persona = null,
-            bool fireRules = false,
-            int depth = 1)
+            PageQueryParams queryParams)
         {
             try
             {
 
-                path = NormalizePath(path);
+                string path = NormalizePath(queryParams.Path);
                 // Create the request to the dotCMS API
                 var requestUrl = $"{_apiHost}/api/v1/page/json{path}";
 
@@ -82,29 +74,32 @@ namespace RazorPagesDotCMS.Services
                 var uriBuilder = new UriBuilder(requestUrl);
                 var query = new System.Collections.Specialized.NameValueCollection();
 
-                if (!string.IsNullOrEmpty(siteId))
+                if (!string.IsNullOrEmpty(queryParams.Site))
                 {
-                    query["siteId"] = siteId;
+                    query["siteId"] = queryParams.Site;
+                }
+                PageMode mode;
+                if (!Enum.TryParse(queryParams.PageMode, true, out mode))
+                {
+                    mode = PageMode.LIVE_MODE;  // Default to LIVE_MODE if not provided
+                }
+                query["mode"] = mode.ToString();
+
+                if (!string.IsNullOrEmpty(queryParams.Language))
+                {
+                    query["language_id"] = queryParams.Language;
                 }
 
-                if (mode.HasValue)
+                if (!string.IsNullOrEmpty(queryParams.Persona))
                 {
-                    query["mode"] = mode.Value.ToString();
+                    query["persona"] = queryParams.Persona;
                 }
 
-                if (!string.IsNullOrEmpty(languageId))
-                {
-                    query["language_id"] = languageId;
-                }
 
-                if (!string.IsNullOrEmpty(persona))
-                {
-                    query["persona"] = persona;
-                }
 
                 // Always include fireRules and depth parameters
-                query["fireRules"] = fireRules.ToString().ToLower();
-                query["depth"] = depth.ToString();
+                query["fireRules"] = queryParams.FireRules?.ToString().ToLower() ?? "false";
+                query["depth"] = queryParams.Depth?.ToString() ?? "0";
 
                 // Convert the query collection to a query string
                 var queryString = string.Join("&", Array.ConvertAll(
@@ -120,8 +115,7 @@ namespace RazorPagesDotCMS.Services
                 }
 
                 string finalRequestUrl = uriBuilder.Uri.ToString();
-                int cacheSeconds = PageMode.LIVE_MODE == mode ? 60 : 0;
-
+                int cacheSeconds = queryParams.CacheSeconds ?? (mode == PageMode.LIVE_MODE ? 60 : 0);
                 // Use GetOrAddAsync with an async delegate
                 return await cache.GetOrAdd(finalRequestUrl, async () =>
                 {
@@ -148,7 +142,8 @@ namespace RazorPagesDotCMS.Services
                         // Deserialize the response to PageResponse model
                         var options = new JsonSerializerOptions
                         {
-                            PropertyNameCaseInsensitive = true
+                            PropertyNameCaseInsensitive = true,
+                            NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString
                         };
 
                         var pageResponse = JsonSerializer.Deserialize<PageResponse>(content, options);
@@ -173,22 +168,19 @@ namespace RazorPagesDotCMS.Services
         /// </summary>
         /// <param name="graphqlQuery">The GraphQL query</param>
         /// <returns>The page response</returns>
-        public async Task<PageResponse> GetPageGraphqlAsync(
-            string path,
-            string? siteId = null,
-            PageMode? mode = PageMode.LIVE_MODE,
-            string? languageId = null,
-            string? persona = null,
-            bool fireRules = false)
+        public async Task<PageResponse> GetPageGraphqlAsync(PageQueryParams queryParams)
         {
             try
             {
+                PageMode mode;
+                if (!Enum.TryParse(queryParams.PageMode, true, out mode))
+                {
+                    mode = PageMode.LIVE_MODE;  // Default to LIVE_MODE if not provided
+                }
+                string graphqlQuery = GetGraphqlPageQuery(queryParams.Path, queryParams.Site, mode, queryParams.Language, queryParams.Persona, queryParams.FireRules ?? false);
 
-                PageMode newMode = (PageMode)(mode is null ? PageMode.LIVE_MODE : mode);  // Default to LIVE_MODE if not provided
-                string graphqlQuery = GetGraphqlPageQuery(path, siteId, newMode, languageId, persona, fireRules);
-
-                int ttlSeconds = newMode == PageMode.LIVE_MODE ? 60 : 0;
-                string content = await QueryGraphqlAsync(graphqlQuery, ttlSeconds);
+                int cacheSeconds = queryParams.CacheSeconds ?? (mode == PageMode.LIVE_MODE ? 60 : 0);
+                string content = await QueryGraphqlAsync(graphqlQuery, cacheSeconds);
 
                 // Convert the GraphQL response to PageResponse using the instance
                 return _modelHelper.ConvertGraphqlToPageResponse(content);
@@ -200,12 +192,12 @@ namespace RazorPagesDotCMS.Services
             }
         }
 
-        
+
         public async Task<string> QueryGraphqlAsync(string graphqlQuery)
         {
             return await QueryGraphqlAsync(graphqlQuery, 0);
         }
-        
+
 
         public async Task<string> QueryGraphqlAsync(string graphqlQuery, int cacheSeconds)
         {
@@ -341,11 +333,12 @@ namespace RazorPagesDotCMS.Services
         {
             // Normalize the path
             path = path ?? "/";
+            path = path.StartsWith("/") ? path : "/" + path;
             path = path.EndsWith("/") ? $"{path}index" : path;
             return path;
         }
 
-     
+
 
         private static string graphql = @"
    {
@@ -384,15 +377,11 @@ namespace RazorPagesDotCMS.Services
                 path
                 identifier
                 maxContentlets
-                container {
-                    identifier
-                    path
-                    maxContentlets
-                }
                 containerStructures {
-                    contentTypeVar
-                    inode
-                    identifier
+                  contentTypeVar
+                  containerId
+				  containerInode
+                  structureId
                 }
                 containerContentlets {
                     uuid

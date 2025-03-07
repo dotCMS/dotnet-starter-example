@@ -1,8 +1,31 @@
+using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace RazorPagesDotCMS.Models
 {
+    public class Persona
+    {
+        [JsonPropertyName("name")]
+        public string? Name { get; set; }
+
+        [JsonPropertyName("keyTag")]
+        public string? KeyTag { get; set; }
+
+        [JsonPropertyName("identifier")]
+        public string? Identifier { get; set; }
+    }
+
+    public class Tag
+    {
+        [JsonPropertyName("tag")]
+        public string? TagName { get; set; }
+
+        [JsonPropertyName("count")]
+        public int? Count { get; set; }
+    }
+
     public class ViewAs
     {
         [JsonPropertyName("visitor")]
@@ -21,7 +44,7 @@ namespace RazorPagesDotCMS.Models
     public class Visitor
     {
         [JsonPropertyName("tags")]
-        public List<string>? Tags { get; set; }
+        public List<Tag>? Tags { get; set; }
 
         [JsonPropertyName("device")]
         public string? Device { get; set; }
@@ -38,8 +61,8 @@ namespace RazorPagesDotCMS.Models
         [JsonPropertyName("geo")]
         public Geo? Geo { get; set; }
 
-        [JsonPropertyName("personas")]
-        public Dictionary<string, object>? Personas { get; set; }
+        [JsonPropertyName("persona")]
+        public Persona? Persona { get; set; }
     }
 
     public class UserAgent
@@ -69,13 +92,50 @@ namespace RazorPagesDotCMS.Models
         public string? MinorVersion { get; set; }
     }
 
+    // Custom converter for handling both numeric and string values
+    public class StringOrNumberConverter : JsonConverter<string>
+    {
+        public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType == JsonTokenType.Number)
+            {
+                return reader.GetDouble().ToString();
+            }
+            else if (reader.TokenType == JsonTokenType.String)
+            {
+                return reader.GetString();
+            }
+            else if (reader.TokenType == JsonTokenType.Null)
+            {
+                return null;
+            }
+            
+            throw new JsonException($"Unexpected token type: {reader.TokenType}");
+        }
+
+        public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNullValue();
+            }
+            else
+            {
+                writer.WriteStringValue(value);
+            }
+        }
+    }
+
     public class Geo
     {
+        // Using custom converter to handle both numeric and string values
         [JsonPropertyName("latitude")]
-        public double? Latitude { get; set; }
+        [JsonConverter(typeof(StringOrNumberConverter))]
+        public string? Latitude { get; set; }
 
         [JsonPropertyName("longitude")]
-        public double? Longitude { get; set; }
+        [JsonConverter(typeof(StringOrNumberConverter))]
+        public string? Longitude { get; set; }
 
         [JsonPropertyName("country")]
         public string? Country { get; set; }

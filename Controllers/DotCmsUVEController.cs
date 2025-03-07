@@ -1,7 +1,6 @@
-using System;
-using System.Threading.Tasks;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+
 using RazorPagesDotCMS.Models;
 using RazorPagesDotCMS.Services;
 
@@ -36,45 +35,50 @@ namespace RazorPagesDotCMS.Controllers
             
             try
             {
-                // Parse the mode enum if provided
-                PageMode? pageMode = null;
-                if (!string.IsNullOrEmpty(mode)){
-                    string modeUpper = mode.ToUpper().EndsWith("_MODE") ? mode.ToUpper() : mode.ToUpper() + "_MODE";
-                    if (Enum.TryParse<PageMode>(modeUpper, out var parsedMode))
-                    {
-                        pageMode = parsedMode;
-                    }
-
+                PageMode pageMode;
+                if (!Enum.TryParse(mode, true, out pageMode))
+                {
+                    pageMode = PageMode.LIVE_MODE;  // Default to LIVE_MODE if not provided
                 }
                 
                 // Log the query parameters
                 _logger.LogInformation($"Query parameters: siteId={siteId}, mode={mode}, language_id={language_id}, " +
                                       $"persona={persona}, fireRules={fireRules}, depth={depth}");
                 
+                // Create a PageQueryParams object to pass to the service
+                var queryParams = new PageQueryParams
+                {
+                    Path = catchAll,
+                    Site = siteId,
+                    PageMode = mode,
+                    Language = language_id,
+                    Persona = persona,
+                    FireRules = fireRules,
+                    Depth = depth
+                };
+
                 PageResponse pageResponse;
                 try
                 {
                     // Try to get the page using GraphQL first
                     _logger.LogInformation("Attempting to get page using GraphQL API");
-                    pageResponse = await _dotCmsService.GetPageGraphqlAsync(
-                        catchAll,
-                        siteId,
-                        pageMode,
-                        language_id,
-                        persona,
-                        fireRules);
+                    PageResponse graphqlResponse = await _dotCmsService.GetPageGraphqlAsync(queryParams);
+                    pageResponse = await _dotCmsService.GetPageAsync(queryParams);
+                    string graphJSON = JsonSerializer.Serialize(graphqlResponse);
+                    string restJSON = JsonSerializer.Serialize(pageResponse);
+                    if (graphJSON != restJSON)
+                    {
+                        _logger.LogWarning("GraphQL and REST API responses differ");
+                        _logger.LogWarning("GraphQL response: " + graphJSON);
+                        _logger.LogWarning("REST API response: " + restJSON);
+                    }
+
                 }
                 catch (Exception ex)
                 {
                     // If GraphQL fails, fall back to the REST API
-                    _logger.LogWarning(ex, "GraphQL API failed, falling back to REST API");
-                    pageResponse = await _dotCmsService.GetPageAsync(
-                        catchAll,
-                        siteId,
-                        pageMode,
-                        language_id,
-                        persona,
-                        fireRules);
+                    _logger.LogWarning(ex, "GraphQL API failed, falling back to REST API:" + ex.Message);
+                    pageResponse = await _dotCmsService.GetPageAsync(queryParams);
                 }
 
                 // Return the view with the pageResponse

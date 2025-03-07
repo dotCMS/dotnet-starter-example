@@ -10,7 +10,10 @@ namespace RazorPagesDotCMS.Models
         private readonly ILogger<ModelHelper> _logger;
         private readonly JsonSerializerOptions options = new JsonSerializerOptions
         {
-            PropertyNameCaseInsensitive = true
+            PropertyNameCaseInsensitive = true,
+            NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString,
+            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+            Converters = { new StringOrNumberConverter() }
         };
         public ModelHelper(ILogger<ModelHelper> logger)
         {
@@ -35,25 +38,30 @@ namespace RazorPagesDotCMS.Models
                 using (var document = JsonDocument.Parse(graphqlResponse))
                 {
                     var root = document.RootElement;
+                    _logger.LogInformation($"Root element properties: {string.Join(", ", root.EnumerateObject().Select(p => p.Name))}");
+                    
                     if (root.TryGetProperty("data", out var dataElement))
                     {
-                        _logger.LogDebug("Found 'data' property in response");
+                        _logger.LogInformation("Found 'data' property in response");
+                        _logger.LogInformation($"Data element properties: {string.Join(", ", dataElement.EnumerateObject().Select(p => p.Name))}");
+                        
                         if (dataElement.TryGetProperty("page", out var pageElement))
                         {
-                            _logger.LogDebug("Found 'page' property in data");
+                            _logger.LogInformation("Found 'page' property in data");
+                            _logger.LogInformation($"Page element properties: {string.Join(", ", pageElement.EnumerateObject().Select(p => p.Name))}");
                         }
                         else
                         {
                             _logger.LogWarning("No 'page' property found in 'data'");
                             // Log the actual structure
-                            _logger.LogDebug($"Data element structure: {JsonSerializer.Serialize(dataElement)}");
+                            _logger.LogInformation($"Data element structure: {JsonSerializer.Serialize(dataElement)}");
                         }
                     }
                     else
                     {
                         _logger.LogWarning("No 'data' property found in response");
                         // Log the actual structure
-                        _logger.LogDebug($"Root element properties: {string.Join(", ", root.EnumerateObject().Select(p => p.Name))}");
+                        _logger.LogInformation($"Root element structure: {JsonSerializer.Serialize(root)}");
                     }
                 }
 
@@ -77,8 +85,119 @@ namespace RazorPagesDotCMS.Models
 
                     if (graphqlData.Data.Page == null)
                     {
-                        _logger.LogError("GraphQL response has no 'page' property in 'data'");
-                        throw new JsonException("GraphQL response has no 'page' property in 'data'");
+                        _logger.LogWarning("GraphQL response has no 'page' property in 'data', attempting to use raw data");
+                        
+                        // Try to extract page data directly from the JSON
+                        using (var document = JsonDocument.Parse(graphqlResponse))
+                        {
+                            var root = document.RootElement;
+                            if (root.TryGetProperty("data", out var dataElement))
+                            {
+                                // Check if the data element itself is the page data
+                                _logger.LogInformation("Attempting to use data element as page data");
+                                
+                                // Create a new GraphqlData and GraphqlPage
+                                graphqlData.Data = new GraphqlData();
+                                var pageData = new GraphqlPage();
+                                
+                                // Try to populate basic properties
+                                if (dataElement.TryGetProperty("page", out var pageElement))
+                                {
+                                    _logger.LogInformation("Found page element in data, using it directly");
+                                    // Use the page element directly
+                                    try
+                                    {
+                                        pageData = JsonSerializer.Deserialize<GraphqlPage>(pageElement.GetRawText(), options);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        _logger.LogError(ex, "Error deserializing page element");
+                                        
+                                        // Try to extract individual properties
+                                        if (pageElement.TryGetProperty("title", out var titleElement) && titleElement.ValueKind == JsonValueKind.String)
+                                        {
+                                            pageData.Title = titleElement.GetString();
+                                        }
+                                        
+                                        if (pageElement.TryGetProperty("friendlyName", out var friendlyNameElement) && friendlyNameElement.ValueKind == JsonValueKind.String)
+                                        {
+                                            pageData.FriendlyName = friendlyNameElement.GetString();
+                                        }
+                                        
+                                        // Try to extract layout data
+                                        if (pageElement.TryGetProperty("layout", out var layoutElement))
+                                        {
+                                            pageData.Layout = JsonSerializer.Deserialize<Layout>(layoutElement.GetRawText(), options);
+                                        }
+                                        
+                                        // Try to extract containers data
+                                        if (pageElement.TryGetProperty("containers", out var containersElement))
+                                        {
+                                            pageData.Containers = JsonSerializer.Deserialize<List<GraphqlContainer>>(containersElement.GetRawText(), options);
+                                        }
+                                        
+                                        // Try to extract template data
+                                        if (pageElement.TryGetProperty("template", out var templateElement))
+                                        {
+                                            pageData.Template = JsonSerializer.Deserialize<GraphqlTemplate>(templateElement.GetRawText(), options);
+                                        }
+                                        
+                                        // Try to extract _map data
+                                        if (pageElement.TryGetProperty("_map", out var mapElement))
+                                        {
+                                            pageData._map = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(mapElement.GetRawText(), options);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    _logger.LogWarning("No page element found in data, trying to use data element properties directly");
+                                    
+                                    // Try to populate basic properties from data element
+                                    if (dataElement.TryGetProperty("title", out var titleElement) && titleElement.ValueKind == JsonValueKind.String)
+                                    {
+                                        pageData.Title = titleElement.GetString();
+                                    }
+                                    
+                                    if (dataElement.TryGetProperty("friendlyName", out var friendlyNameElement) && friendlyNameElement.ValueKind == JsonValueKind.String)
+                                    {
+                                        pageData.FriendlyName = friendlyNameElement.GetString();
+                                    }
+                                    
+                                    // Try to extract layout data
+                                    if (dataElement.TryGetProperty("layout", out var layoutElement))
+                                    {
+                                        pageData.Layout = JsonSerializer.Deserialize<Layout>(layoutElement.GetRawText(), options);
+                                    }
+                                    
+                                    // Try to extract containers data
+                                    if (dataElement.TryGetProperty("containers", out var containersElement))
+                                    {
+                                        pageData.Containers = JsonSerializer.Deserialize<List<GraphqlContainer>>(containersElement.GetRawText(), options);
+                                    }
+                                    
+                                    // Try to extract template data
+                                    if (dataElement.TryGetProperty("template", out var templateElement))
+                                    {
+                                        pageData.Template = JsonSerializer.Deserialize<GraphqlTemplate>(templateElement.GetRawText(), options);
+                                    }
+                                    
+                                    // Try to extract _map data
+                                    if (dataElement.TryGetProperty("_map", out var mapElement))
+                                    {
+                                        pageData._map = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(mapElement.GetRawText(), options);
+                                    }
+                                }
+                                
+                                // Set the page data
+                                graphqlData.Data.Page = pageData;
+                            }
+                            else
+                            {
+                                _logger.LogError("GraphQL response has no 'data' property");
+                                throw new JsonException("GraphQL response has no 'data' property");
+                            }
+                        }
                     }
                 }
                 catch (JsonException ex)
@@ -101,9 +220,16 @@ namespace RazorPagesDotCMS.Models
 
                 var graphqlPage = graphqlData.Data.Page;
 
+                // Initialize _map if it's null
+                if (graphqlPage._map == null)
+                {
+                    _logger.LogWarning("GraphQL page _map is null, initializing empty dictionary");
+                    graphqlPage._map = new Dictionary<string, JsonElement>();
+                }
+
                 _logger.LogInformation($"GraphQL page title: {graphqlPage.Title}");
 
-                // Create a new PageResponse
+                // Create a new PageResponse with null checks for all properties
                 var pageResponse = new PageResponse
                 {
                     Entity = new PageEntity
@@ -111,11 +237,11 @@ namespace RazorPagesDotCMS.Models
                         // Map the page data
                         Page = new Page
                         {
-                            Title = graphqlPage.Title,
+                            Title = graphqlPage.Title ?? "Untitled Page",
                             FriendlyName = graphqlPage.FriendlyName,
-                            CanEdit = graphqlPage.CanEdit,
-                            CanLock = graphqlPage.CanLock,
-                            CanRead = graphqlPage.CanRead,
+                            CanEdit = graphqlPage.CanEdit ?? false,
+                            CanLock = graphqlPage.CanLock ?? false,
+                            CanRead = graphqlPage.CanRead ?? true,
                             // Map additional properties from _map
                             Identifier = GetStringValue(graphqlPage._map, "identifier"),
                             Inode = GetStringValue(graphqlPage._map, "inode"),
