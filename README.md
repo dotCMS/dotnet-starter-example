@@ -1,11 +1,11 @@
-# dotCMS .NET SDK
+# dotCM .NET Example for UVE
 
-This project is a .NET SDK for interacting with dotCMS. It provides a way to render dotCMS pages in a .NET application.
+This project is a UVE .NET example/base project and is intended to be used as a template for web projects looking to render dotCMS content and pages using .NET MVC and Razor templates.  
 
 ## Features
 
-- Render dotCMS pages in a .NET application
-- Support for container instances with proper UUID handling
+- Render dotCMS content and pages in a .NET application
+- Uses C#, .NET MVC and Razor templates for views
 - Service-based architecture for API interactions
 
 ## Configuration
@@ -16,7 +16,7 @@ The application is configured through the `appsettings.json` file:
 {
   "dotCMS": {
     "ApiHost": "https://demo.dotcms.com",
-    "ApiToken": "",
+    "ApiToken": "ABC123......",
     "ApiUserName": "admin@dotcms.com",
     "ApiPassword": "admin"
   },
@@ -50,27 +50,28 @@ The application follows a clean architecture pattern:
 
 ### Key Components
 
-- **DotCmsService**: Service for interacting with the dotCMS API
+- **DotCmsService**: Service for interacting with the dotCMS API.  This includes methods to call dotCMS APIs and the dotCMS graphQL endpoint.
 - **DotCmsUVEController**: Controller for handling dotCMS page requests
-- **Container Model**: Enhanced to maintain UUID information for container instances
 
-## Container Instances
 
-One of the key features is the ability to handle multiple instances of the same container on a page. Each container instance has its own UUID, and the SDK ensures that contentlets are properly filtered by container instance.
-
-The `Container` class in `Layout.cs` has a `ContainerInstanceId` property that formats the UUID as "uuid-X" where X is the value of the Uuid property. This property is used to match against the keys in the `Contentlets` dictionary.
 
 ## Usage
 
-The application acts as a proxy for dotCMS pages. When a request is made to any path, the `DotCmsUVEController` will:
+The DotCmsUVEController acts as a catchall/proxy for dotCMS pages. When a request is made to any path, the `DotCmsUVEController` will:
 
-1. Forward the request to the dotCMS API
+1. Forward the uri to the dotCMS Page API to get the Page response, which includes all data regarding the template, layout, content blocks and content and which can be used to composit a page.
 2. Parse the response into the appropriate models
 3. Render the page using the Razor view
 
 ### TagHelpers
 
 The SDK includes custom TagHelpers to simplify common UI components:
+
+
+#### ContentletTagHelper
+This tag helper accepts a dotCMS contentlet object and passes the content data to a view for appropiate rendering and inclusion on a page.  It accepts a Contentlet and based upon that Contentlet's content type, will look for an appropiate `View` file under the `/Views/ContentTypes` to use to render the content. 
+
+Things that could be improved - perhaps the ContentletTagHelper should also take the 
 
 #### HeaderTagHelper and FooterTagHelper
 
@@ -117,3 +118,11 @@ dotnet run
 ```
 
 The application will be available at `https://localhost:5001`.
+
+
+
+## TODOs
+This is a WIP and there is still a lot to do for this example to be complete.  These include:
+
+- Add a Nav using dotCMS Nav API
+- 
