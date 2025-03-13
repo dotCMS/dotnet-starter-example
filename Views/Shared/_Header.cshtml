@@ -1,17 +1,50 @@
 @model string
+@using RazorPagesDotCMS.Models
+@inject RazorPagesDotCMS.Services.IDotCmsService DotCmsService
+
+@{
+    var navigation = await DotCmsService.GetNavigationAsync();
+}
 
 <div class="header-content">
     <div class="logo">
         <a href="/">
-            <img src="/images/logo.png" alt="Logo" onerror="this.style.display='none'" />
-            <span>@(Model ?? "DotCMS Header")</span>
+            <img src="/img/logo.png" alt="Logo" onerror="this.style.display='none'" />
         </a>
     </div>
     <nav class="main-nav">
-        <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/about">About</a></li>
-            <li><a href="/contact">Contact</a></li>
+        <ul class="nav-menu">
+            @if (navigation?.Entity?.Children != null)
+            {
+                foreach (var item in navigation.Entity.Children)
+                {
+                    <li class="nav-item @(item.Children.Any() ? "has-dropdown" : "")">
+                        <a href="@item.Href" target="@item.Target">@item.Title</a>
+                        @if (item.Children.Any())
+                        {
+                            <ul class="dropdown">
+                                @foreach (var child in item.Children)
+                                {
+                                    <li class="dropdown-item @(child.Children.Any() ? "has-submenu" : "")">
+                                        <a href="@child.Href" target="@child.Target">@child.Title</a>
+                                        @if (child.Children.Any())
+                                        {
+                                            <ul class="submenu">
+                                                @foreach (var subChild in child.Children)
+                                                {
+                                                    <li class="submenu-item">
+                                                        <a href="@subChild.Href" target="@subChild.Target">@subChild.Title</a>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </li>
+                }
+            }
         </ul>
     </nav>
 </div>

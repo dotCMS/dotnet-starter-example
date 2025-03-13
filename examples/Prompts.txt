@@ -23,3 +23,10 @@ We need a catch-all controller that will accept all requests (except to URIs tha
 
 When it gets a response, it should automatically map that response to the PageResponse Model -  the api response will look like it does in the page-test.json file.
 
+
+We want to show the site navigation in the header.  there is an api which needs to be called that will return the navigation tree that uses this endpoint: /api/v1/nav/?depth=4
+the depth parameter is configurable and controls the depth of nav hierachy to return.  The api response looks like what is in the nav-result.json file.  Can you add a method to the dotCMSService class to retreve the the results and build a drop down nav based on that?  This nav should be done in the header.cshtml file and should not use any framework or javascript libraries if possible, just css.
+
+
+
+

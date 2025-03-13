@@ -34,5 +34,11 @@ namespace RazorPagesDotCMS.Services
 
         Task<string> QueryGraphqlAsync(string graphqlQuery, int cacheSeconds);
 
+        /// <summary>
+        /// Gets the site navigation from the dotCMS API
+        /// </summary>
+        /// <param name="depth">The depth of the navigation hierarchy to retrieve (default: 4)</param>
+        /// <returns>The navigation response</returns>
+        Task<NavigationResponse> GetNavigationAsync(int depth = 4);
     }
 }

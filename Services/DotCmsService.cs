@@ -461,6 +461,65 @@ namespace RazorPagesDotCMS.Services
     }
     ";
 
+        /// <summary>
+        /// Gets the site navigation from the dotCMS API
+        /// </summary>
+        /// <param name="depth">The depth of the navigation hierarchy to retrieve (default: 4)</param>
+        /// <returns>The navigation response</returns>
+        public async Task<NavigationResponse> GetNavigationAsync(int depth = 4)
+        {
+            try
+            {
+                // Create the request to the dotCMS API
+                var requestUrl = $"{_apiHost}/api/v1/nav/?depth={depth}";
 
+                // Cache for 60 seconds in live mode
+                int cacheSeconds = 60;
+
+                return await cache.GetOrAdd(requestUrl, async () =>
+                {
+                    try
+                    {
+                        _logger.LogInformation($"Requesting navigation from: {requestUrl}");
+
+                        var request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+                        request.Headers.Add("Authorization", _apiAuth);
+
+                        // Send the request to dotCMS
+                        var response = await _httpClient.SendAsync(request);
+
+                        // Check if the response is successful
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            _logger.LogWarning($"dotCMS API returned status code: {response.StatusCode}");
+                            throw new HttpRequestException($"dotCMS API returned status code: {response.StatusCode}");
+                        }
+
+                        // Read the response content
+                        var content = await response.Content.ReadAsStringAsync();
+
+                        // Deserialize the response to NavigationResponse model
+                        var options = new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true,
+                            NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString
+                        };
+
+                        var navigationResponse = JsonSerializer.Deserialize<NavigationResponse>(content, options);
+                        return navigationResponse ?? throw new JsonException("Failed to deserialize navigation response");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error getting navigation from dotCMS API");
+                        throw;
+                    }
+                }, DateTimeOffset.Now.AddSeconds(cacheSeconds));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in GetNavigationAsync");
+                throw;
+            }
+        }
     }
 }
