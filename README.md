@@ -3,22 +3,23 @@
 
 # dotCMS .NET Example for UVE
 
-  
-This project is a UVE .NET example/base project and is intended to be used as a template for web projects looking to render dotCMS content and pages using .NET MVC and Razor templates.  The example points to our demo site and is pulling the page, content and layout from https://demo.dotcms.com
+This project is a UVE .NET example/base project and is intended to be used as a template for web projects looking to render dotCMS content and pages using [.NET MVC](https://dotnet.microsoft.com/en-us/apps/aspnet/mvc) and [Razor templates](https://learn.microsoft.com/en-us/aspnet/core/razor-pages/).  The example points to our demo site and is pulling the page, content, layout grid and other information from https://demo.dotcms.com
 
 
+---
 ![Screenshot 2025-03-13 at 12 28 14 PM](https://github.com/user-attachments/assets/ab10b19b-0eeb-4763-9cd0-d9b70aeeb1d9)
 
-
-
-
-
+---
 
 ## Features
 
 - Render dotCMS content and pages in a .NET application
 - Uses C#, .NET MVC and Razor templates for views
 - Service-based architecture for API interactions
+
+
+
+
 
 ## Configuration
 
