@@ -43,6 +43,17 @@ The application is configured through the `appsettings.json` file:
 }
 ```
 
+### Proxy Configuration
+
+The `proxy` section configures the proxy feature, which forwards specific requests to dotCMS or other target servers. This is particularly useful for handling assets, images, and other resources that need to be served directly from dotCMS.
+
+Each proxy configuration has the following properties:
+- `enabled`: Boolean to enable/disable the proxy
+- `path`: The URI pattern to match (supports wildcards with *)
+- `target`: The target server URL to proxy to
+
+For more details, see [Proxy Documentation](docs/Proxy.md).
+
 You can authenticate using either:
 - An API token (preferred for production)
 - Username and password
@@ -60,6 +71,7 @@ The application follows a clean architecture pattern:
 
 - **DotCmsService**: Service for interacting with the dotCMS API.  This includes methods to call dotCMS APIs and the dotCMS graphQL endpoint.
 - **DotCmsUVEController**: Controller for handling dotCMS page requests
+- **ProxyActionFilter**: Action filter that proxies requests to dotCMS or other target servers based on configured paths
 
 
 
@@ -133,9 +145,8 @@ The application will be available at `https://localhost:5001`.
 ## TODOs
 This is a WIP and there is still a lot to do for this example to be complete.  These include:
 
-- Add a Nav using dotCMS Nav API
+
 - Transform dotCMS Graphql Page API response so that it renders like the PageAPI does.
 - Add the required `data-attr` for UVE and containers, content
 - Add include the uve-editor.js to "activate" uve when rendered in dotCMS
 - Make content type components "container" aware - meaning look for the content type `View` under `/Views/ContentTypes/{containerName}/{ContentType}.cshtml` and then fall back to `/Views/ContentTypes/{ContentType}.cshtml` if a container specific view is not available.
-- Write the proxy for `/dA/*` and `/contentAsset/*` paths so they will render appropiately. 

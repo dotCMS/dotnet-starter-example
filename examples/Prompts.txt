@@ -18,17 +18,23 @@ We need a Model class for each of the following objects
 
 These needs to be placed in the Models folder
    
-
+-----
 We need a catch-all controller that will accept all requests (except to URIs that start with `/dA`) and take that request and do web request to the dotCMS server specified in the `appsettings.json` dotCMS.ApiHost value.  It should call  the remote dotCMS instance /api/v1/page/json/${incomingURI} endpoint.    It should also include the ApiToken in the Authorization Bearer :header 
 
 When it gets a response, it should automatically map that response to the PageResponse Model -  the api response will look like it does in the page-test.json file.
 
 
+
+
+-----
 We want to show the site navigation in the header.  there is an api which needs to be called that will return the navigation tree that uses this endpoint: /api/v1/nav/?depth=4
 the depth parameter is configurable and controls the depth of nav hierachy to return.  The api response looks like what is in the nav-result.json file.  
 Can you add a method to the dotCMSService class to retreve the the results and build a drop down nav based on that?  This nav should be done in the header.cshtml 
 file and should not use any framework or javascript libraries if possible, just css.
 
+
+
+-----
 We need to create a Youtube.cshtml that takes the following properties and uses them to embed a youtube video into our .NET Template.  The id is the embed code for the youtube video.  here are the properties:
 
 thumbnailLarge: https://i.ytimg.com/vi/Xm8Fe3dHmkE/hqdefault.jpg
@@ -40,13 +46,13 @@ titleImage: thumbnailCustom
 thumbnailCustom: f7987fef136a8c845eca74335b939a3c
 hasLiveVersion: True
 
+
+
+
 We need to create a Product.cshtml component that takes the following properties and uses them to display a product's information into our .NET Template.  The Product.cshtml should be card like and show the specifications as a list.  The urlTitle is a slug link to the product detail page 
 The description can be truncated as it can get very long
 
 here are the Product properties:
-
-
-
 image2Version: /dA/845c17ee-ba36-4029-b243-44e8228e9260/image2/Rossignol Evo 70 Ski Boots 3.png
 image3Version: /dA/845c17ee-ba36-4029-b243-44e8228e9260/image3/Rossignol Evo 70 Ski Boots 2.png
 image: /dA/39aa1441-2933-4c81-b3f4-cc154195595b/image/Rossignol1.png
@@ -60,3 +66,8 @@ specifications1: { "Model Year" : "2019", "Warranty" : "One Year", "Model Number
 mage3ContentAsset: 39aa1441-2933-4c81-b3f4-cc154195595b/image3
 image2ContentAsset: 39aa1441-2933-4c81-b3f4-cc154195595b/image2
 description:The Rossignol Evo 70 is the perfect option for the beginner to mellow intermediate skier who has a medium to wide forefoot and medium to wide leg shape. The 104mm last is very accommodating, by being the widest fit that Rossignol produces. The upper buckle has a Tool-Free Catch Adjustment that offers plenty of adjustability for getting the fit just right across your leg. Rossignol's new Comfort Fit T4 Liner is loaded with soft padding in the toe box and forefoot with some firmer padding in the heel and ankle pocket for additional support. If you are looking for a plush boot that fits a wider foot shape that is easy to adjust in the cuff, the Rossignol Evo 70 is the boot for you.
+
+
+
+---
+can you create an ActionFilter that runs before the DotCMSUVEController.  This Action filter reads the list of uris to proxy from the appsettings.json and proxies all those requests to the target servers.  If the uri does not match any proxy uris, the controller should pass the request on to the Controller for further handling.  If the request uri does match one of the proxies, the ActionFilter should proxy the request to the proxy target

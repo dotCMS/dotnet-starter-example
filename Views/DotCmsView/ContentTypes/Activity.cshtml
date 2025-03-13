@@ -6,7 +6,7 @@
         ? imageValue.GetString()
         : Model.Identifier;   
     // Extract common activity properties from AdditionalProperties
-    var imageUrl = "https://demo.dotcms.com/dA/" + imageId + "/image/1200maxw/80q/" + "image.webp";
+    var imageUrl = "/dA/" + imageId + "/image/1200maxw/80q/" + "image.webp";
         
     var title = Model.AdditionalProperties?.TryGetValue("title", out var titleValue) == true && titleValue.ValueKind == System.Text.Json.JsonValueKind.String
         ? titleValue.GetString()

@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 
 using RazorPagesDotCMS.Models;
 using RazorPagesDotCMS.Services;
+using RazorPagesDotCMS.Filters;
 
 namespace RazorPagesDotCMS.Controllers
 {
+    [Proxy]
     public class DotCmsUVEController : Controller
     {
         private readonly IDotCmsService _dotCmsService;

@@ -67,7 +67,7 @@ namespace RazorPagesDotCMS.TagHelpers
                 string contentType = Contentlet.ContentType ?? "Generic";
                 
                 // Try to find the view in ContentTypes directory or Shared/ContentTypes
-                string viewName = $"ContentTypes/{contentType}";
+                string viewName = $"../DotCmsView/ContentTypes/{contentType}";
                 
                 _logger.LogInformation($"Looking for view: {viewName}");
                 

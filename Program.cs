@@ -5,6 +5,15 @@ builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews(); // Changed from AddControllers to AddControllersWithViews
 builder.Services.AddHttpClient();
 
+// Register named HttpClient for proxy
+builder.Services.AddHttpClient("ProxyClient", client => {
+    client.DefaultRequestHeaders.Add("User-Agent", "DotCMS.NET-SDK-Proxy");
+    client.Timeout = TimeSpan.FromSeconds(60);
+});
+
+// Register ProxyActionFilter
+builder.Services.AddScoped<RazorPagesDotCMS.Filters.ProxyActionFilter>();
+
 // Register LazyCache
 builder.Services.AddSingleton<LazyCache.IAppCache>(new LazyCache.CachingService());
 
