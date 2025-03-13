@@ -1,6 +1,12 @@
-# dotCM .NET Example for UVE
+![dotcms-logo-square](https://github.com/user-attachments/assets/97d16db7-706c-4f4c-b352-619e1c8ceccc) &nbsp; &nbsp; &nbsp; &nbsp; ![Microsoft_ NET_logo](https://github.com/user-attachments/assets/59b19db7-206e-49c4-83b1-efbaf98ca07f)  &nbsp; 
 
+
+# dotCMS .NET Example for UVE
+
+  
 This project is a UVE .NET example/base project and is intended to be used as a template for web projects looking to render dotCMS content and pages using .NET MVC and Razor templates.  
+
+
 
 ## Features
 
