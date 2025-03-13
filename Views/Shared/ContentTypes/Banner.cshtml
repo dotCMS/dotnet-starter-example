@@ -20,14 +20,8 @@
         : "";
 }
 
-<style>
-    .banner-image-holder {
 
-
-    }
-    </style>
-
-<div class="banner banner-image-holder" style="background-image: url('@Html.Raw(imageUrl)');" alt="@altText">
+<div class="banner banner-image-holder" style="border-radius: 1em; background-image: url('@Html.Raw(imageUrl)');" alt="@altText">
     @if (!string.IsNullOrEmpty(linkUrl))
     {
         <a href="@linkUrl" class="banner-link">

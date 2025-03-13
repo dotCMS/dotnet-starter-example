@@ -1,38 +1,74 @@
 @model RazorPagesDotCMS.Models.Contentlet
 @{
-    // Extract common banner properties from AdditionalProperties
-    var imageUrl = "https://demo.dotcms.com/dA/" + Model.Identifier + "/image/1200maxw/80q/" + Model.Title;
+
+
+    var imageId = Model.AdditionalProperties?.TryGetValue("image", out var imageValue) == true && imageValue.ValueKind == System.Text.Json.JsonValueKind.String
+        ? imageValue.GetString()
+        : Model.Identifier;   
+    // Extract common activity properties from AdditionalProperties
+    var imageUrl = "https://demo.dotcms.com/dA/" + imageId + "/image/1200maxw/80q/" + "image.webp";
         
-    var urlMap = Model.AdditionalProperties?.TryGetValue("urlMap", out var urlMapValue) == true && urlMapValue.ValueKind == System.Text.Json.JsonValueKind.String
-        ? urlMapValue.GetString()
+    var title = Model.AdditionalProperties?.TryGetValue("title", out var titleValue) == true && titleValue.ValueKind == System.Text.Json.JsonValueKind.String
+        ? titleValue.GetString()
+        : Model.Title;  
+
+    var urlTitle = Model.AdditionalProperties?.TryGetValue("urlTitle", out var urlTitleValue) == true && urlTitleValue.ValueKind == System.Text.Json.JsonValueKind.String
+        ? urlTitleValue.GetString()
         : "";
 
     var altTag = Model.AdditionalProperties?.TryGetValue("altTag", out var altTagValue) == true && altTagValue.ValueKind == System.Text.Json.JsonValueKind.String
         ? altTagValue.GetString()
         : Model.Title;
         
+    var description = Model.AdditionalProperties?.TryGetValue("description", out var descriptionValue) == true && descriptionValue.ValueKind == System.Text.Json.JsonValueKind.String
+        ? descriptionValue.GetString()
+        : "";
+        
     var body = Model.AdditionalProperties?.TryGetValue("body", out var bodyValue) == true && bodyValue.ValueKind == System.Text.Json.JsonValueKind.String
         ? bodyValue.GetString()
-        : Model.Title;
+        : "";
         
-
+    var tags = Model.AdditionalProperties?.TryGetValue("tags", out var tagsValue) == true && tagsValue.ValueKind == System.Text.Json.JsonValueKind.Array
+        ? tagsValue.EnumerateArray().Select(t => t.GetString()).Where(t => t != null).ToList()
+        : new List<string>();
 }
 
-<div class="activity">
-    @if (!string.IsNullOrEmpty(imageUrl))
-    {
-        
-        <img src="@imageUrl" alt="@altTag" style="width:100%;" class="activity-image" />
-    }
+
+<div class="activity-card" >
+
+
+        <div class="activity-image-container" style="background-image: url('@Html.Raw(imageUrl)');" onclick="window.location.href='/activities/@urlTitle'">
+
+        </div>
+
     <div class="activity-content">
         @if (!string.IsNullOrEmpty(Model.Title))
         {
             <h2 class="activity-title">@Model.Title</h2>
         }
-        @if (!string.IsNullOrEmpty(body))
+        
+        @if (!string.IsNullOrEmpty(description))
         {
-            
+            <div class="activity-description">@description</div>
         }
+        
+        @if (tags.Any())
+        {
+            <div class="activity-tags">
+                @foreach (var tag in tags)
+                {
+                    <span class="activity-tag">@tag</span>
+                }
+            </div>
+        }
+        
+        <div class="activity-footer">
+            @if (!string.IsNullOrEmpty(urlTitle))
+            {
+                <a href="/activities/@urlTitle" class="activity-link">Learn More</a>
+            }
+        </div>
+        
+
     </div>
 </div>
-   
