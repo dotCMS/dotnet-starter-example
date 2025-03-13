@@ -20,14 +20,21 @@
         : "";
 }
 
-<div class="banner">
+<style>
+    .banner-image-holder {
+
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        height: 500px;
+        position: relative;
+    }
+    </style>
+
+<div class="banner banner-image-holder" style="background-image: url('@Html.Raw(imageUrl)');" alt="@altText">
     @if (!string.IsNullOrEmpty(linkUrl))
     {
         <a href="@linkUrl" class="banner-link">
-            @if (!string.IsNullOrEmpty(imageUrl))
-            {
-                <img src="@imageUrl" alt="@altText" class="banner-image" />
-            }
             <div class="banner-content">
                 @if (!string.IsNullOrEmpty(Model.Title))
                 {
@@ -42,12 +49,8 @@
     }
     else
     {
-        @if (!string.IsNullOrEmpty(imageUrl))
-        {
-            <img src="@imageUrl" alt="@altText" class="banner-image" />
-        }
         <div class="banner-content">
-            @if (!string.IsNullOrEmpty(Model.Title))
+            @if (!string.IsNullOrEmpty(Model.Title))    
             {
                 <h2 class="banner-title">@Model.Title</h2>
             }
