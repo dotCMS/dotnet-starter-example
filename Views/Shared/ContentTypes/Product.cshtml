@@ -1,0 +1,259 @@
+@model RazorPagesDotCMS.Models.Contentlet
+@{
+    // Extract product properties from AdditionalProperties
+    var image = Model.AdditionalProperties?.TryGetValue("image", out var imageValue) == true && imageValue.ValueKind == System.Text.Json.JsonValueKind.String
+        ? imageValue.GetString()
+        : "";
+        
+    var image2Version = Model.AdditionalProperties?.TryGetValue("image2Version", out var image2VersionValue) == true && image2VersionValue.ValueKind == System.Text.Json.JsonValueKind.String
+        ? image2VersionValue.GetString()
+        : "";
+        
+    var image3Version = Model.AdditionalProperties?.TryGetValue("image3Version", out var image3VersionValue) == true && image3VersionValue.ValueKind == System.Text.Json.JsonValueKind.String
+        ? image3VersionValue.GetString()
+        : "";
+        
+    var urlTitle = Model.AdditionalProperties?.TryGetValue("urlTitle", out var urlTitleValue) == true && urlTitleValue.ValueKind == System.Text.Json.JsonValueKind.String
+        ? urlTitleValue.GetString()
+        : "";
+        
+    var publishUserName = Model.AdditionalProperties?.TryGetValue("publishUserName", out var publishUserNameValue) == true && publishUserNameValue.ValueKind == System.Text.Json.JsonValueKind.String
+        ? publishUserNameValue.GetString()
+        : "";
+        
+    var publishUser = Model.AdditionalProperties?.TryGetValue("publishUser", out var publishUserValue) == true && publishUserValue.ValueKind == System.Text.Json.JsonValueKind.String
+        ? publishUserValue.GetString()
+        : "";
+        
+    var productNumber = Model.AdditionalProperties?.TryGetValue("productNumber", out var productNumberValue) == true && productNumberValue.ValueKind == System.Text.Json.JsonValueKind.String
+        ? productNumberValue.GetString()
+        : "";
+        
+    var tags = Model.AdditionalProperties?.TryGetValue("tags", out var tagsValue) == true && tagsValue.ValueKind == System.Text.Json.JsonValueKind.String
+        ? tagsValue.GetString()?.Split(',').Select(t => t.Trim()).Where(t => !string.IsNullOrEmpty(t)).ToList()
+        : new List<string>();
+        
+    var hasTitleImage = Model.AdditionalProperties?.TryGetValue("hasTitleImage", out var hasTitleImageValue) == true && hasTitleImageValue.ValueKind == System.Text.Json.JsonValueKind.True
+        ? true
+        : false;
+        
+    var description = Model.AdditionalProperties?.TryGetValue("description", out var descriptionValue) == true && descriptionValue.ValueKind == System.Text.Json.JsonValueKind.String
+        ? descriptionValue.GetString()
+        : "";
+        
+    // Extract specifications from the JSON object
+    var specifications = new Dictionary<string, string>();
+    if (Model.AdditionalProperties?.TryGetValue("specifications1", out var specificationsValue) == true && 
+        specificationsValue.ValueKind == System.Text.Json.JsonValueKind.Object)
+    {
+        foreach (var prop in specificationsValue.EnumerateObject())
+        {
+            specifications[prop.Name] = prop.Value.GetString() ?? "";
+        }
+    }
+    
+    // Function to strip HTML tags
+    string StripHtml(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+            
+        return System.Text.RegularExpressions.Regex.Replace(input, "<.*?>", string.Empty);
+    }
+    
+    // Strip HTML and then truncate description if it's too long
+    var strippedDescription = StripHtml(description);
+    var truncatedDescription = !string.IsNullOrEmpty(strippedDescription) && strippedDescription.Length > 150
+        ? strippedDescription.Substring(0, 150) + "..."
+        : strippedDescription;
+        
+    // Determine the main image URL to display
+    var mainImageUrl = !string.IsNullOrEmpty(image)
+        ? "https://demo.dotcms.com" + image
+        : "";
+}
+
+<div class="product-card">
+    <div class="product-image-container">
+        @if (!string.IsNullOrEmpty(mainImageUrl))
+        {
+            <img src="@mainImageUrl" alt="@Model.Title" class="product-image" onclick="window.location.href='/store/products/@urlTitle'">
+        }
+    </div>
+    
+    <div class="product-content">
+        <div class="product-header">
+            @if (!string.IsNullOrEmpty(Model.Title))
+            {
+                <h2 class="product-title">@Model.Title</h2>
+            }
+            
+            @if (!string.IsNullOrEmpty(productNumber))
+            {
+                <div class="product-number">SKU: @productNumber</div>
+            }
+        </div>
+        
+        @if (!string.IsNullOrEmpty(truncatedDescription))
+        {
+            <div class="product-description">@truncatedDescription</div>
+        }
+        
+        @if (specifications.Count > 0)
+        {
+            <div class="product-specifications">
+                <h3>Specifications</h3>
+                <ul class="specifications-list">
+                    @foreach (var spec in specifications)
+                    {
+                        <li><strong>@spec.Key:</strong> @spec.Value</li>
+                    }
+                </ul>
+            </div>
+        }
+        
+        @if (tags.Any())
+        {
+            <div class="product-tags">
+                @foreach (var tag in tags)
+                {
+                    <span class="product-tag">@tag</span>
+                }
+            </div>
+        }
+        
+        <div class="product-footer">
+            @if (!string.IsNullOrEmpty(urlTitle))
+            {
+                <a href="/store/products/@urlTitle" class="product-link">View Details</a>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .product-card {
+        display: flex;
+        flex-direction: column;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-bottom: 20px;
+        background-color: #fff;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .product-image-container {
+        height: 250px;
+        overflow: hidden;
+        cursor: pointer;
+    }
+    
+    .product-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .product-image:hover {
+        transform: scale(1.05);
+    }
+    
+    .product-content {
+        padding: 20px;
+    }
+    
+    .product-header {
+        margin-bottom: 15px;
+    }
+    
+    .product-title {
+        margin: 0 0 5px 0;
+        font-size: 1.5rem;
+        color: #333;
+    }
+    
+    .product-number {
+        font-size: 0.9rem;
+        color: #666;
+    }
+    
+    .product-description {
+        margin-bottom: 15px;
+        color: #555;
+        line-height: 1.5;
+    }
+    
+    .product-specifications {
+        margin-bottom: 15px;
+    }
+    
+    .product-specifications h3 {
+        margin: 0 0 10px 0;
+        font-size: 1.1rem;
+        color: #333;
+    }
+    
+    .specifications-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .specifications-list li {
+        padding: 5px 0;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .specifications-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .product-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-bottom: 15px;
+    }
+    
+    .product-tag {
+        background-color: #f0f0f0;
+        color: #555;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+    }
+    
+    .product-footer {
+        margin-top: 15px;
+    }
+    
+    .product-link {
+        display: inline-block;
+        padding: 8px 16px;
+        background-color: #0066cc;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: 500;
+        transition: background-color 0.3s ease;
+    }
+    
+    .product-link:hover {
+        background-color: #0052a3;
+    }
+    
+    /* Maintain card-like appearance with image on top at all screen sizes */
+    @@media (min-width: 768px) {
+        .product-card {
+            max-width: 400px;
+            margin: 0 auto 20px auto;
+        }
+    }
+</style>

@@ -1,0 +1,87 @@
+@model RazorPagesDotCMS.Models.Contentlet
+@{
+    // Extract YouTube-specific properties from AdditionalProperties
+    var id = Model.AdditionalProperties?.TryGetValue("id", out var idValue) == true && idValue.ValueKind == System.Text.Json.JsonValueKind.String
+        ? idValue.GetString()
+        : "";
+        
+    var author = Model.AdditionalProperties?.TryGetValue("author", out var authorValue) == true && authorValue.ValueKind == System.Text.Json.JsonValueKind.String
+        ? authorValue.GetString()
+        : "";
+        
+    var length = Model.AdditionalProperties?.TryGetValue("length", out var lengthValue) == true && lengthValue.ValueKind == System.Text.Json.JsonValueKind.String
+        ? lengthValue.GetString()
+        : "";
+        
+    var thumbnailLarge = Model.AdditionalProperties?.TryGetValue("thumbnailLarge", out var thumbnailLargeValue) == true && thumbnailLargeValue.ValueKind == System.Text.Json.JsonValueKind.String
+        ? thumbnailLargeValue.GetString()
+        : "";
+        
+    var thumbnailSmall = Model.AdditionalProperties?.TryGetValue("thumbnailSmall", out var thumbnailSmallValue) == true && thumbnailSmallValue.ValueKind == System.Text.Json.JsonValueKind.String
+        ? thumbnailSmallValue.GetString()
+        : "";
+        
+    var titleImage = Model.AdditionalProperties?.TryGetValue("titleImage", out var titleImageValue) == true && titleImageValue.ValueKind == System.Text.Json.JsonValueKind.String
+        ? titleImageValue.GetString()
+        : "";
+        
+    var thumbnailCustom = Model.AdditionalProperties?.TryGetValue("thumbnailCustom", out var thumbnailCustomValue) == true && thumbnailCustomValue.ValueKind == System.Text.Json.JsonValueKind.String
+        ? thumbnailCustomValue.GetString()
+        : "";
+        
+    var hasLiveVersion = Model.AdditionalProperties?.TryGetValue("hasLiveVersion", out var hasLiveVersionValue) == true && hasLiveVersionValue.ValueKind == System.Text.Json.JsonValueKind.True
+        ? true
+        : false;
+        
+    // Determine which thumbnail to use
+    string thumbnailUrl;
+    if (titleImage == "thumbnailCustom" && !string.IsNullOrEmpty(thumbnailCustom))
+    {
+        thumbnailUrl = "https://demo.dotcms.com/dA/" + thumbnailCustom + "/image/1200maxw/80q/" + "image.webp";
+    }
+    else
+    {
+        thumbnailUrl = !string.IsNullOrEmpty(thumbnailLarge) ? thumbnailLarge : thumbnailSmall;
+    }
+}
+
+<div class="youtube-video-container">
+    @if (!string.IsNullOrEmpty(id))
+    {
+        <div class="youtube-video">
+            <iframe 
+                width="100%" 
+                height="315" 
+                src="https://www.youtube.com/embed/@id" 
+                title="@Model.Title" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                allowfullscreen>
+            </iframe>
+        </div>
+    }
+    
+    <div class="youtube-info">
+        @if (!string.IsNullOrEmpty(Model.Title))
+        {
+            <h3 class="youtube-title">@Model.Title</h3>
+        }
+        
+        <div class="youtube-metadata">
+            @if (!string.IsNullOrEmpty(author))
+            {
+                <span class="youtube-author">@author</span>
+            }
+            
+            @if (!string.IsNullOrEmpty(length))
+            {
+                <span class="youtube-length">@length</span>
+            }
+            
+            @if (hasLiveVersion)
+            {
+                <span class="youtube-live-badge">LIVE</span>
+            }
+        </div>
+    </div>
+</div>

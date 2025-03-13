@@ -43,6 +43,39 @@ Custom fields for a content type are available in the `AdditionalProperties` dic
 
 If a view for a specific content type is not found, the `ContentletTagHelper` will fall back to a generic rendering that displays all properties of the contentlet.
 
+## Available Content Type Views
+
+### Activity
+
+Renders an activity card with image, title, description, tags, and a "Learn More" link.
+
+### Banner
+
+Renders a banner with background image, title, and optional button text and link.
+
+### SimpleWidget
+
+A basic widget that displays its title.
+
+### YouTube
+
+Renders a YouTube video embed with video information. Supports the following properties:
+
+- `id`: The YouTube video ID (required for embedding)
+- `author`: The creator of the video
+- `length`: The duration of the video
+- `thumbnailLarge`: URL to a large thumbnail image
+- `thumbnailSmall`: URL to a small thumbnail image
+- `titleImage`: Indicates which thumbnail to use (e.g., "thumbnailCustom")
+- `thumbnailCustom`: A custom thumbnail identifier
+- `hasLiveVersion`: Boolean indicating if there's a live version of the video
+
+Example usage:
+
+```html
+<contentlet-renderer contentlet="youtubeContentlet"></contentlet-renderer>
+```
+
 ## Usage in Templates
 
 To use the `ContentletTagHelper` in your views:
