@@ -62,6 +62,7 @@ The DotCmsUVEController acts as a catchall/proxy for dotCMS pages. When a reques
 1. Forward the uri to the dotCMS Page API to get the Page response, which includes all data regarding the template, layout, content blocks and content and which can be used to composit a page.
 2. Parse the response into the appropriate models
 3. Render the page using the Razor view
+4. Caches the PageAPI response for up to 1 minute for performance.
 
 ### TagHelpers
 
@@ -125,4 +126,8 @@ The application will be available at `https://localhost:5001`.
 This is a WIP and there is still a lot to do for this example to be complete.  These include:
 
 - Add a Nav using dotCMS Nav API
-- 
+- Transform dotCMS Graphql Page API response so that it renders like the PageAPI does.
+- Add the required `data-attr` for UVE and containers, content
+- Add include the uve-editor.js to "activate" uve when rendered in dotCMS
+- Make content type components "container" aware - meaning look for the content type `View` under `/Views/ContentTypes/{containerName}/{ContentType}.cshtml` and then fall back to `/Views/ContentTypes/{ContentType}.cshtml` if a container specific view is not available.
+- Write the proxy for `/dA/*` and `/contentAsset/*` paths so they will render appropiately. 
