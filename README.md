@@ -13,7 +13,7 @@ This project is a UVE .NET example/base project and is intended to be used as a 
 - Service-based architecture for API interactions
 
 
-### Example dotCMS demo site rendering with C# and .NET
+### Example dotCMS demo site rendering with C#, MVC & Razor
 
 ![image](https://github.com/user-attachments/assets/719f6d90-9267-458b-9428-0c2c52175d34)
 
