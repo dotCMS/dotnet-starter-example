@@ -35,5 +35,6 @@
     <footer-section show="@(layout?.Footer == true)" copyright="@(page?.Title ?? "DotCMS")"></footer-section>
     
     @await RenderSectionAsync("Scripts", required: false)
+    <script src="~/js/sdk-editor.js"></script>
 </body>
 </html>

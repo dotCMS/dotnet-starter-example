@@ -1,0 +1,138 @@
+@page
+@model MyWebApp.Pages.DotCMSPageModel
+@{
+    ViewData["Title"] = Model.PageContent?.Page?.FriendlyName ?? "Page";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/style.css" />
+</head>
+<body>
+    <header class="container" style="background-color: rgba(0, 0, 0, 0.5); text-align: center;">
+        <h1>@ViewData["Title"]</h1>
+    </header>
+
+
+    @if (Model.PageContent?.Layout?.Body?.Rows != null)
+    {
+        foreach (var row in Model.PageContent.Layout.Body.Rows)
+        {
+            <div class="container">
+                <div data-dot-object="row" class="row @(row.StyleClass ?? "")">
+                    @foreach (var column in row.Columns)
+                    {
+                        var startClass = $"col-start-{column.LeftOffset}";
+                        var endClass = $"col-end-{column.Width + column.LeftOffset}";
+                        
+                        <div data-dot-object="column" class="@startClass @endClass @(column.StyleClass ?? "")">
+                            @foreach (var containerRef in column.Containers)
+                            {
+                                var containerData = Model.PageContent.Containers[containerRef.Identifier];
+                                @* <p>containerData => @System.Text.Json.JsonSerializer.Serialize(containerData)</p> *@
+                                @* <p>MaxContentlets => @containerData.Container.maxContentlets</p> *@
+                                @* <p>VARIANT => @containerData.Container</p> *@
+                                var contentlets = containerData.Contentlets
+                                    .GetValueOrDefault($"uuid-{containerRef.UUID}") 
+                                    ?? containerData.Contentlets
+                                    .GetValueOrDefault($"uuid-dotParser_{containerRef.UUID}");
+
+                                if (contentlets != null)
+                                {
+                                    var acceptTypes = string.Join(",", containerData.ContainerStructures.Select(s => s.ContentTypeVar));
+                                    
+                                    <div data-dot-object="container"
+                                         data-dot-identifier="@(containerData.Container?.GetType().GetProperty("Path")?.GetValue(containerData.Container) ?? containerRef.Identifier)"
+                                         data-dot-accept-types="@acceptTypes"
+                                         data-max-contentlets="@(containerData.Container?.GetType().GetProperty("maxContentlets")?.GetValue(containerData.Container))"
+                                         data-dot-uuid="@containerRef.UUID">
+                                        
+                                        @foreach (var content in contentlets)
+                                        {
+                                            <div data-dot-object="contentlet"
+                                                 data-dot-identifier="@content.Identifier"
+                                                 data-dot-basetype="@content.BaseType"
+                                                 data-dot-title="@(content.WidgetTitle ?? content.Title)"
+                                                 data-dot-inode="@content.Inode"
+                                                 data-dot-type="@content.ContentType"
+                                                 data-dot-container='@Json.Serialize(new {
+                                                     acceptTypes,
+                                                     identifier = containerData.Container?.GetType().GetProperty("Path")?.GetValue(containerData.Container) ?? containerRef.Identifier,
+                                                     maxContentlets = @containerData.Container.maxContentlets,
+                                                     variantId = "DEFAULT",
+                                                     uuid = containerRef.UUID
+                                                 })'>
+
+
+                                                
+                                                @switch (content.ContentType)
+                                                {
+                                                    case "Banner":
+                                                        <article>
+                                                            @if (!string.IsNullOrEmpty(content.Image))
+                                                            {
+                                                                <img src="https://demo.dotcms.com/dA/@content.Identifier/image" alt="@content.Title">
+                                                            }
+                                                            @if (!string.IsNullOrEmpty(content.Title))
+                                                            {
+                                                                <h2>@content.Title</h2>
+                                                            }
+                                                            @if (!string.IsNullOrEmpty(content.Caption))
+                                                            {
+                                                                <p>@content.Caption</p>
+                                                            }
+                                                            @if (!string.IsNullOrEmpty(content.ButtonText))
+                                                            {
+                                                                <a href="@(content.Link ?? "#")">@content.ButtonText</a>
+                                                            }
+                                                        </article>
+                                                        break;
+
+                                                    case "Product":
+                                                        <article>
+                                                            @if (!string.IsNullOrEmpty(content.Image))
+                                                            {
+                                                                <img src="https://demo.dotcms.com/dA/@content.Identifier/image" alt="@content.Title">
+                                                            }
+                                                            <div>
+                                                                <h3>@content.Title</h3>
+                                                                <div>@content.RetailPrice</div>
+                                                                <div>@content.SalePrice</div>
+                                                                <a href="/store/products/@content.UrlTitle">Buy Now</a>
+                                                            </div>
+                                                        </article>
+                                                        break;
+
+                                                    case "Activity":
+                                                        <article>
+                                                            @if (!string.IsNullOrEmpty(content.Image))
+                                                            {
+                                                                <img src="https://demo.dotcms.com/dA/@content.Identifier/image" alt="@content.Title">
+                                                            }
+                                                            <div>
+                                                                <h3>@content.Title</h3>
+                                                                <p>@content.Description</p>
+                                                                <a href="/activities/@content.UrlTitle">Link to detail →</a>
+                                                            </div>
+                                                        </article>
+                                                        break;
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+
+    <script src="~/js/sdk-editor.js"></script>
+</body>
+</html> 
