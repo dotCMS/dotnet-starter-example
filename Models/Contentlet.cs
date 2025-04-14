@@ -84,6 +84,9 @@ namespace RazorPagesDotCMS.Models
         [JsonPropertyName("name")]
         public string? Name { get; set; }
 
+        [JsonPropertyName("onNumberOfPages")]
+        public int? OnNumberOfPages { get; set; }
+
         // Additional properties that can be arbitrary
         [JsonExtensionData]
         public Dictionary<string, JsonElement>? AdditionalProperties { get; set; }

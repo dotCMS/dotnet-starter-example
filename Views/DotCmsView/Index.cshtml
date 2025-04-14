@@ -4,6 +4,11 @@
     var layout = Model?.Entity?.Layout;
     var page = Model?.Entity?.Page;
     var containers = Model?.Entity?.Containers;
+
+    // Helper function to get accept types from container structure
+    string GetAcceptTypes(ContainerStructure containerStructure) {
+        return string.Join(",", containerStructure.ContainerStructures?.Select(cs => cs.ContentTypeVar) ?? Array.Empty<string>());
+    }
 }
 
 
@@ -57,22 +62,41 @@
                                         {
                                             foreach (var container in column.Containers)
                                             {
-                                                if (containers != null && containers.TryGetValue(container.Identifier, out var containerStructure))
+                                                if (containers != null && container.Identifier != null && containers.TryGetValue(container.Identifier, out var containerStructure))
                                                 {
-                                                    <fieldset class="container-content">
+                                                    var acceptTypes = GetAcceptTypes(containerStructure);
+                                                    <fieldset class="container-content" 
+                                                            data-dot-object="container"
+                                                            data-dot-identifier="@(containerStructure.Container?.Path ?? container.Identifier)"
+                                                            data-dot-accept-types="@acceptTypes"
+                                                            data-max-contentlets="@containerStructure.Container?.MaxContentlets"
+                                                            data-dot-uuid="@container.Uuid">
                                                         <legend>@containerStructure.Container?.Title</legend>
                                                         
                                                         @if (containerStructure.Contentlets != null)
                                                         {
-                                                            // Get the container instance ID to filter contentlets
                                                             string containerInstanceId = container.ContainerInstanceId;
                                                             
-                                                            // Check if this container instance has contentlets
-                                                            if (containerStructure.Contentlets.TryGetValue(containerInstanceId, out var instanceContentlets))
+                                                            if (containerInstanceId != null && containerStructure.Contentlets.TryGetValue(containerInstanceId, out var instanceContentlets))
                                                             {
                                                                 foreach (var contentlet in instanceContentlets)
                                                                 {
-                                                                    <contentlet-renderer contentlet="contentlet"></contentlet-renderer>
+                                                                    <div data-dot-object="contentlet"
+                                                                         data-dot-identifier="@contentlet.Identifier"
+                                                                         data-dot-basetype="@contentlet.BaseType"
+                                                                         data-dot-title="@contentlet.Title"
+                                                                         data-dot-inode="@contentlet.Inode"
+                                                                         data-dot-type="@contentlet.ContentType"
+                                                                        data-dot-on-number-of-pages="@contentlet.OnNumberOfPages"
+                                                                         data-dot-container='@Json.Serialize(new {
+                                                                             acceptTypes,
+                                                                             identifier = containerStructure.Container?.Path ?? container.Identifier,
+                                                                             maxContentlets = containerStructure.Container?.MaxContentlets,
+                                                                             variantId = "DEFAULT",
+                                                                             uuid = container.Uuid
+                                                                         })'>
+                                                                        <contentlet-renderer contentlet="contentlet"></contentlet-renderer>
+                                                                    </div>
                                                                 }
                                                             }
                                                             else
