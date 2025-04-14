@@ -137,5 +137,8 @@ namespace RazorPagesDotCMS.Models
 
         [JsonPropertyName("working")]
         public bool? Working { get; set; }
+
+        [JsonPropertyName("uuid")]
+        public string? Uuid { get; set; }
     }
 }
