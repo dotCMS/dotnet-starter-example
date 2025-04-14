@@ -15,9 +15,7 @@ This project is a UVE .NET example/base project and is intended to be used as a 
 
 ### Example dotCMS demo site rendering with C#, MVC & Razor
 
-![image](https://github.com/user-attachments/assets/719f6d90-9267-458b-9428-0c2c52175d34)
-
-
+https://github.com/user-attachments/assets/8cdf8952-63bf-4214-af85-f0c1eed3a32c
 
 
 ## Configuration
