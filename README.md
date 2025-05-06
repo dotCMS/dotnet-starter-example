@@ -5,6 +5,18 @@
 
 This project is a UVE .NET example/base project and is intended to be used as a template for web projects looking to render dotCMS content and pages using [.NET MVC](https://dotnet.microsoft.com/en-us/apps/aspnet/mvc) and [Razor templates](https://learn.microsoft.com/en-us/aspnet/core/razor-pages/).  The example points to our demo site and is pulling the page, content, layout grid and other information from https://demo.dotcms.com
 
+## Development
+
+To run the application locally:
+
+```bash
+dotnet run
+```
+
+The application will be available at `https://localhost:5001`.
+
+
+
 
 ## Features
 
@@ -131,17 +143,6 @@ Key features:
 - Customizable through attributes (`title` for header, `copyright` for footer)
 
 See `Views/Shared/_TagHelperExamples.cshtml` for more detailed examples.
-
-## Development
-
-To run the application locally:
-
-```bash
-dotnet run
-```
-
-The application will be available at `https://localhost:5001`.
-
 
 
 ## TODOs
