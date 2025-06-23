@@ -6,7 +6,12 @@
         ? imageValue.GetString()
         : Model.Identifier;   
     // Extract common activity properties from AdditionalProperties
-    var imageUrl = "/dA/" + imageId + "/image/1200maxw/80q/" + "image.webp";
+    var imageUrl = !string.IsNullOrEmpty(imageId) && imageId.IndexOf("/dA") > -1 
+    ? imageId
+    : "/dA/" + (imageId ?? "default") + "/image/1200maxw/80q/" + "image.webp";
+    
+    
+   
         
     var title = Model.AdditionalProperties?.TryGetValue("title", out var titleValue) == true && titleValue.ValueKind == System.Text.Json.JsonValueKind.String
         ? titleValue.GetString()
@@ -40,6 +45,7 @@
         <div class="activity-image-container" style="background-image: url('@Html.Raw(imageUrl)');" onclick="window.location.href='/activities/@urlTitle'">
 
         </div>
+
 
     <div class="activity-content">
         @if (!string.IsNullOrEmpty(Model.Title))
