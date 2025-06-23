@@ -20,7 +20,7 @@ namespace RazorPagesDotCMS.Models
         [JsonPropertyName("cacheSeconds")]
         public int? CacheSeconds { get; set; }
 
-        [JsonPropertyName("persona")]
+        [JsonPropertyName("personaId")]
         public string? Persona { get; set; }
 
         [JsonPropertyName("fireRules")]

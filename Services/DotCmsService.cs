@@ -56,7 +56,7 @@ namespace RazorPagesDotCMS.Services
         /// <param name="siteId">Optional site ID</param>
         /// <param name="mode">Optional view mode (EDIT_MODE, PREVIEW_MODE, LIVE_MODE)</param>
         /// <param name="languageId">Optional language ID</param>
-        /// <param name="persona">Optional persona ID</param>
+        /// <param name="personaId">Optional persona ID</param>
         /// <param name="fireRules">Whether to fire rules (default: false)</param>
         /// <param name="depth">Depth of the content to retrieve (default: 1)</param>
         /// <returns>The page response</returns>
@@ -92,7 +92,7 @@ namespace RazorPagesDotCMS.Services
 
                 if (!string.IsNullOrEmpty(queryParams.Persona))
                 {
-                    query["persona"] = queryParams.Persona;
+                    query["com.dotmarketing.persona.id"] = queryParams.Persona;
                 }
 
 
@@ -115,29 +115,33 @@ namespace RazorPagesDotCMS.Services
                 }
 
                 string finalRequestUrl = uriBuilder.Uri.ToString();
-                int cacheSeconds = queryParams.CacheSeconds ?? (mode == PageMode.LIVE_MODE ? 60 : 0);
+                int cacheSeconds = queryParams.CacheSeconds ?? (mode == PageMode.LIVE_MODE ? 10 : 0);
                 // Use GetOrAddAsync with an async delegate
                 return await cache.GetOrAdd(finalRequestUrl, async () =>
                 {
-                    try
+                try
+                {
+                    _logger.LogInformation($"Requesting page from: {finalRequestUrl}");
+
+                    var request = new HttpRequestMessage(HttpMethod.Get, finalRequestUrl);
+                    request.Headers.Add("Authorization", _apiAuth);
+
+                    // Send the request to dotCMS
+                    var response = await _httpClient.SendAsync(request);
+
+                    // Check if the response is successful
+                    if (!response.IsSuccessStatusCode)
                     {
-                        _logger.LogInformation($"Requesting page from: {finalRequestUrl}");
+                        _logger.LogWarning($"dotCMS API returned status code: {response.StatusCode}");
+                        throw new HttpRequestException($"dotCMS API returned status code: {response.StatusCode}");
+                    }
 
-                        var request = new HttpRequestMessage(HttpMethod.Get, finalRequestUrl);
-                        request.Headers.Add("Authorization", _apiAuth);
+                    // Read the response content
+                    var content = await response.Content.ReadAsStringAsync();
 
-                        // Send the request to dotCMS
-                        var response = await _httpClient.SendAsync(request);
 
-                        // Check if the response is successful
-                        if (!response.IsSuccessStatusCode)
-                        {
-                            _logger.LogWarning($"dotCMS API returned status code: {response.StatusCode}");
-                            throw new HttpRequestException($"dotCMS API returned status code: {response.StatusCode}");
-                        }
+                   // _logger.LogInformation($"CONTENT: {content}");
 
-                        // Read the response content
-                        var content = await response.Content.ReadAsStringAsync();
 
                         // Deserialize the response to PageResponse model
                         var options = new JsonSerializerOptions

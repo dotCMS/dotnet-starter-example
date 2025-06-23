@@ -29,7 +29,7 @@ namespace RazorPagesDotCMS.Controllers
             [FromQuery] string? siteId = null,
             [FromQuery] string? mode = null,
             [FromQuery] string? language_id = null,
-            [FromQuery] string? persona = null,
+            [FromQuery] string? personaId = null,
             [FromQuery] bool fireRules = false,
             [FromQuery] int depth = 1)
         {
@@ -45,7 +45,7 @@ namespace RazorPagesDotCMS.Controllers
                 
                 // Log the query parameters
                 _logger.LogInformation($"Query parameters: siteId={siteId}, mode={mode}, language_id={language_id}, " +
-                                      $"persona={persona}, fireRules={fireRules}, depth={depth}");
+                                      $"persona={personaId}, fireRules={fireRules}, depth={depth}");
                 
                 // Create a PageQueryParams object to pass to the service
                 var queryParams = new PageQueryParams
@@ -54,34 +54,13 @@ namespace RazorPagesDotCMS.Controllers
                     Site = siteId,
                     PageMode = mode,
                     Language = language_id,
-                    Persona = persona,
+                    Persona = personaId,
                     FireRules = fireRules,
                     Depth = depth
                 };
 
-                PageResponse pageResponse;
-                try
-                {
-                    // Try to get the page using GraphQL first
-                    _logger.LogInformation("Attempting to get page using GraphQL API");
-                    PageResponse graphqlResponse = await _dotCmsService.GetPageGraphqlAsync(queryParams);
-                    pageResponse = await _dotCmsService.GetPageAsync(queryParams);
-                    string graphJSON = JsonSerializer.Serialize(graphqlResponse);
-                    string restJSON = JsonSerializer.Serialize(pageResponse);
-                    if (graphJSON != restJSON)
-                    {
-                        _logger.LogWarning("GraphQL and REST API responses differ");
-                        _logger.LogWarning("GraphQL response: " + graphJSON);
-                        _logger.LogWarning("REST API response: " + restJSON);
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    // If GraphQL fails, fall back to the REST API
-                    _logger.LogWarning(ex, "GraphQL API failed, falling back to REST API:" + ex.Message);
-                    pageResponse = await _dotCmsService.GetPageAsync(queryParams);
-                }
+                PageResponse pageResponse = await _dotCmsService.GetPageAsync(queryParams);
+      
 
                 // Return the view with the pageResponse
                 return View("~/Views/DotCmsView/Index.cshtml", pageResponse);
