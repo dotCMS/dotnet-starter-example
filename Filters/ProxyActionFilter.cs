@@ -50,7 +50,7 @@ namespace RazorPagesDotCMS.Filters
             var httpClient = _httpClientFactory.CreateClient("ProxyClient");
             var targetUri = new Uri(matchingProxy.Target + path.Substring(matchingProxy.Path.Replace("*", "").Length));
             
-            _logger.LogInformation($"Proxying request to {targetUri}");
+            //_logger.LogInformation($"Proxying request to {targetUri}");
 
             // Create the HttpRequestMessage
             var proxyRequest = new HttpRequestMessage();

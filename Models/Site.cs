@@ -82,8 +82,8 @@ namespace RazorPagesDotCMS.Models
         [JsonPropertyName("titleImage")]
         public string? TitleImage { get; set; }
 
-        [JsonPropertyName("persona")]
-        public bool? Persona { get; set; }
+        [JsonPropertyName("personaId")]
+        public bool? PersonaId { get; set; }
 
         [JsonPropertyName("live")]
         public bool? Live { get; set; }

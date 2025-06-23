@@ -1,7 +1,6 @@
 {
     "version": "0.2.0",
     "configurations": [
-        
         {
             "name": "Launch RazorPagesDotCMS",
             "type": "coreclr",
@@ -18,14 +17,6 @@
             },
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
-            },
-            "sourceFileMap": {
-                "/Views": "${workspaceFolder}/Pages"
-            },
-            "pipeTransport": {
-                "pipeProgram": "/bin/sh",
-                "pipeArgs": ["-c"],
-                "debuggerPath": "/Users/${env:USER}/vsdbg/vsdbg"
             }
         },
         {
