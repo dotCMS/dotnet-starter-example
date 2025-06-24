@@ -14,19 +14,147 @@ dotnet run
 The application will be available at `https://localhost:5001`.
 
 
-
-
 ## Features
 
 - Render dotCMS content and pages in a .NET application
 - Uses C#, .NET MVC and Razor templates for views
 - Service-based architecture for API interactions
+- Caching support for improved performance
+- Proxy support for serving dotCMS assets
+- Custom TagHelpers for simplified content rendering
 
 
 ### Example dotCMS demo site rendering with C#, MVC & Razor
 
 https://github.com/user-attachments/assets/8cdf8952-63bf-4214-af85-f0c1eed3a32c
 
+
+## How It Works: MVC Pattern & Razor Templates
+
+This application follows the Model-View-Controller (MVC) architectural pattern to render dotCMS content:
+
+### 1. **Controller Layer** (`DotCmsUVEController`)
+
+The `DotCmsUVEController` acts as a catch-all controller that intercepts all incoming requests:
+
+```csharp
+[Route("{**catchAll}")]
+public async Task<IActionResult> Index(string catchAll, ...)
+```
+
+- **Request Handling**: Captures any URL path and forwards it to dotCMS
+- **Parameter Processing**: Handles query parameters like `mode`, `language_id`, `personaId`
+- **Service Integration**: Uses `IDotCmsService` to fetch page data from dotCMS
+- **View Selection**: Returns the appropriate Razor view with the page data model
+
+### 2. **Model Layer** 
+
+The application uses strongly-typed C# models that mirror dotCMS data structures:
+
+- **`PageResponse`**: The main response model containing all page data
+- **`Page`**: Metadata about the page (title, tags, permissions)
+- **`Layout`**: Defines the page structure (rows, columns, containers)
+- **`Container`**: Represents content areas that can hold contentlets
+- **`Contentlet`**: Individual pieces of content with their properties
+
+### 3. **Service Layer** (`DotCmsService`)
+
+The service layer handles all communication with the dotCMS API:
+
+```csharp
+public async Task<PageResponse> GetPageAsync(PageQueryParams queryParams)
+{
+    // 1. Build API URL with parameters
+    // 2. Add authentication headers
+    // 3. Execute HTTP request
+    // 4. Deserialize JSON response to C# models
+    // 5. Cache response for performance
+}
+```
+
+Key features:
+- **Authentication**: Supports both API token and basic auth
+- **Caching**: Uses LazyCache to cache responses (configurable TTL)
+- **Error Handling**: Comprehensive logging and exception handling
+- **GraphQL Support**: Can query dotCMS via GraphQL as an alternative
+
+### 4. **View Layer** (Razor Templates)
+
+The Razor view engine renders the dotCMS page structure:
+
+#### Main Page View (`Views/DotCmsView/Index.cshtml`)
+```razor
+@model RazorPagesDotCMS.Models.PageResponse
+
+@foreach (var row in layout.Body.Rows)
+{
+    <section class="section">
+        @foreach (var column in row.Columns)
+        {
+            <div class="col-lg-@column.Width">
+                @foreach (var container in column.Containers)
+                {
+                    <!-- Render container and its contentlets -->
+                    <contentlet-renderer contentlet="contentlet" />
+                }
+            </div>
+        }
+    </section>
+}
+```
+
+The view:
+- Iterates through the layout structure (rows → columns → containers)
+- Renders Bootstrap-compatible grid markup
+- Uses custom TagHelpers to render individual contentlets
+
+#### Content Type Views (`Views/DotCmsView/ContentTypes/`)
+Each content type has its own Razor view for custom rendering:
+
+```razor
+<!-- Banner.cshtml -->
+@model Contentlet
+<div class="banner">
+    <img src="@Model.GetProperty("image")" alt="@Model.GetProperty("altText")">
+    <h2>@Model.Title</h2>
+    <p>@Html.Raw(Model.GetProperty("description"))</p>
+</div>
+```
+
+### 5. **TagHelpers** 
+
+Custom TagHelpers simplify content rendering:
+
+#### ContentletTagHelper
+```csharp
+[HtmlTargetElement("contentlet-renderer")]
+public class ContentletTagHelper : TagHelper
+{
+    public override void Process(TagHelperContext context, TagHelperOutput output)
+    {
+        // 1. Determine content type
+        // 2. Find appropriate view (e.g., Banner.cshtml)
+        // 3. Render contentlet using the view
+    }
+}
+```
+
+This allows simple usage in views:
+```razor
+<contentlet-renderer contentlet="@myContentlet" />
+```
+
+## Request Flow
+
+1. **Browser Request**: User navigates to `/about-us`
+2. **Controller**: `DotCmsUVEController` catches the request
+3. **Service Call**: `DotCmsService.GetPageAsync("/about-us")` is called
+4. **API Request**: Service makes HTTP request to dotCMS Page API
+5. **Response Processing**: JSON response is deserialized to C# models
+6. **Caching**: Response is cached for subsequent requests
+7. **View Rendering**: Razor view receives the model and renders HTML
+8. **TagHelper Processing**: ContentletTagHelper renders individual content pieces
+9. **Response**: Final HTML is sent to the browser
 
 ## Configuration
 
@@ -38,7 +166,8 @@ The application is configured through the `appsettings.json` file:
     "ApiHost": "https://demo.dotcms.com",
     "ApiToken": "ABC123......",
     "ApiUserName": "admin@dotcms.com",
-    "ApiPassword": "admin"
+    "ApiPassword": "admin",
+    "CacheTTL": 120
   },
   "proxy": [
     {
@@ -70,21 +199,24 @@ You can authenticate using either:
 - An API token (preferred for production)
 - Username and password
 
-## Architecture
+## Architecture Benefits
 
-The application follows a clean architecture pattern:
+This MVC + Razor approach provides several advantages:
 
-1. **Models**: Data models representing dotCMS entities (Page, Layout, Container, etc.)
-2. **Services**: Services for interacting with the dotCMS API
-3. **Controllers**: Controllers for handling HTTP requests
-4. **Views**: Razor views for rendering dotCMS pages
+1. **Separation of Concerns**: Clear separation between data fetching (Service), request handling (Controller), and presentation (Views)
+2. **Type Safety**: Strongly-typed C# models prevent runtime errors
+3. **Reusability**: TagHelpers and partial views enable component reuse
+4. **Performance**: Built-in caching reduces API calls
+5. **Flexibility**: Easy to customize rendering for different content types
+6. **Maintainability**: Standard .NET patterns make the code easy to understand
 
-### Key Components
+## Key Components
 
-- **DotCmsService**: Service for interacting with the dotCMS API.  This includes methods to call dotCMS APIs and the dotCMS graphQL endpoint.
+- **DotCmsService**: Service for interacting with the dotCMS API. This includes methods to call dotCMS APIs and the dotCMS graphQL endpoint.
 - **DotCmsUVEController**: Controller for handling dotCMS page requests
 - **ProxyActionFilter**: Action filter that proxies requests to dotCMS or other target servers based on configured paths
-
+- **ContentletTagHelper**: Renders contentlets based on their content type
+- **HeaderTagHelper/FooterTagHelper**: Conditional header/footer rendering
 
 
 ## Usage
