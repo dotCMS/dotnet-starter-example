@@ -17,6 +17,9 @@ builder.Services.AddScoped<RazorPagesDotCMS.Filters.ProxyActionFilter>();
 // Register LazyCache
 builder.Services.AddSingleton<LazyCache.IAppCache>(new LazyCache.CachingService());
 
+// Register ModelHelper
+builder.Services.AddScoped<RazorPagesDotCMS.Models.ModelHelper>();
+
 // Register DotCMS service
 builder.Services.AddScoped<RazorPagesDotCMS.Services.IDotCmsService, RazorPagesDotCMS.Services.DotCmsService>();
 

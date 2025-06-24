@@ -33,26 +33,33 @@ namespace RazorPagesDotCMS.Controllers
             [FromQuery] bool fireRules = false,
             [FromQuery] int depth = 1)
         {
-            _logger.LogInformation($"DotCmsUVEController.Index called with path: '{catchAll}'");
+            _logger.LogInformation("DotCmsUVEController.Index called with path: {Path}", catchAll);
             
             try
             {
+                // Validate the path parameter
+                if (string.IsNullOrWhiteSpace(catchAll))
+                {
+                    catchAll = "/"; // Default to root path if not provided
+                }
+                
                 PageMode pageMode;
                 if (!Enum.TryParse(mode, true, out pageMode))
                 {
                     pageMode = PageMode.LIVE_MODE;  // Default to LIVE_MODE if not provided
                 }
                 
-                // Log the query parameters
-                _logger.LogInformation($"Query parameters: siteId={siteId}, mode={mode}, language_id={language_id}, " +
-                                      $"persona={personaId}, fireRules={fireRules}, depth={depth}");
+                // Log the query parameters using structured logging
+                _logger.LogInformation("Query parameters: siteId={SiteId}, mode={Mode}, language_id={LanguageId}, " +
+                                      "persona={PersonaId}, fireRules={FireRules}, depth={Depth}",
+                                      siteId, pageMode, language_id, personaId, fireRules, depth);
                 
                 // Create a PageQueryParams object to pass to the service
                 var queryParams = new PageQueryParams
                 {
                     Path = catchAll,
                     Site = siteId,
-                    PageMode = mode,
+                    PageMode = pageMode.ToString(),  // Use the parsed pageMode instead of the raw string
                     Language = language_id,
                     Persona = personaId,
                     FireRules = fireRules,
@@ -67,8 +74,10 @@ namespace RazorPagesDotCMS.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error processing request");
-                return StatusCode(500, ex.Message);
+                _logger.LogError(ex, "Error processing request for path: {Path}", catchAll);
+                
+                // Return a generic error message to avoid exposing internal details
+                return StatusCode(500, "An error occurred while processing your request.");
             }
         }
 
@@ -76,7 +85,7 @@ namespace RazorPagesDotCMS.Controllers
         [Route("contentlet-example/{contentletId}")]
         public IActionResult ContentletExample(string contentletId)
         {
-            _logger.LogInformation($"ContentletExample called with contentletId: '{contentletId}'");
+            _logger.LogInformation("ContentletExample called with contentletId: {ContentletId}", contentletId);
             
             try
             {
@@ -90,16 +99,24 @@ namespace RazorPagesDotCMS.Controllers
                 };
 
                 // Add sample properties that a Banner might have
-                using (var jsonDoc = System.Text.Json.JsonDocument.Parse(@"{
+                var jsonString = @"{
                     ""image"": ""/path/to/banner-image.jpg"",
                     ""link"": ""https://www.dotcms.com"",
                     ""altText"": ""DotCMS Banner"",
                     ""description"": ""<p>This is an example banner created programmatically.</p>""
-                }"))
+                }";
+                
+                // Parse the JSON string and store the elements without cloning
+                // This avoids the resource leak from Clone() method
+                using (var jsonDoc = System.Text.Json.JsonDocument.Parse(jsonString))
                 {
-                    foreach (var property in jsonDoc.RootElement.EnumerateObject())
+                    var json = jsonDoc.RootElement.GetRawText();
+                    using (var newDoc = System.Text.Json.JsonDocument.Parse(json))
                     {
-                        contentlet.AdditionalProperties[property.Name] = property.Value.Clone();
+                        foreach (var property in newDoc.RootElement.EnumerateObject())
+                        {
+                            contentlet.AdditionalProperties[property.Name] = property.Value;
+                        }
                     }
                 }
 
@@ -108,8 +125,10 @@ namespace RazorPagesDotCMS.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error processing contentlet example request");
-                return StatusCode(500, ex.Message);
+                _logger.LogError(ex, "Error processing contentlet example request for ID: {ContentletId}", contentletId);
+                
+                // Return a generic error message to avoid exposing internal details
+                return StatusCode(500, "An error occurred while processing the contentlet example.");
             }
         }
     }
