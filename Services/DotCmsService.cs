@@ -171,6 +171,17 @@ namespace RazorPagesDotCMS.Services
         /// <returns>The navigation response</returns>
         public async Task<NavigationResponse> GetNavigationAsync(int depth = 4)
         {
+            // Validate depth parameter
+            if (depth < 0)
+            {
+                throw new ArgumentException("Depth must be a non-negative value", nameof(depth));
+            }
+            
+            if (depth > 10)
+            {
+                _logger.LogWarning("Navigation depth {Depth} exceeds recommended maximum of 10. This may impact performance.", depth);
+            }
+            
             try
             {
                 var requestUrl = $"{_apiHost}/api/v1/nav/?depth={depth}";
@@ -214,6 +225,7 @@ namespace RazorPagesDotCMS.Services
             {
                 return $"Bearer {apiToken}";
             }
+            _logger.LogWarning($"No API Token found, trying Basic Auth, which is subpar and will force a login every page fetch");
 
             var userName = GetRequiredConfigurationValue(ApiUserNameKey);
             var password = GetRequiredConfigurationValue(ApiPasswordKey);
@@ -380,6 +392,10 @@ namespace RazorPagesDotCMS.Services
             bool fireRules = false)
         {
             var normalizedPath = NormalizePath(path);
+            
+            // Escape special characters to prevent GraphQL injection
+            normalizedPath = EscapeGraphqlString(normalizedPath);
+            
             var queryBuilder = new StringBuilder($"page(url: \"{normalizedPath}\"");
             
             queryBuilder.Append($",pageMode:\"{mode}\"");
@@ -387,17 +403,17 @@ namespace RazorPagesDotCMS.Services
             
             if (!string.IsNullOrWhiteSpace(personaId))
             {
-                queryBuilder.Append($",personaId: \"{personaId}\"");
+                queryBuilder.Append($",personaId: \"{EscapeGraphqlString(personaId)}\"");
             }
             
             if (!string.IsNullOrWhiteSpace(siteId))
             {
-                queryBuilder.Append($",site: \"{siteId}\"");
+                queryBuilder.Append($",site: \"{EscapeGraphqlString(siteId)}\"");
             }
             
             if (!string.IsNullOrWhiteSpace(languageId))
             {
-                queryBuilder.Append($",languageId: \"{languageId}\"");
+                queryBuilder.Append($",languageId: \"{EscapeGraphqlString(languageId)}\"");
             }
             
             queryBuilder.Append(')');
@@ -407,6 +423,27 @@ namespace RazorPagesDotCMS.Services
             
             return finalGraphql;
         }
+        
+        /// <summary>
+        /// Escapes special characters in GraphQL strings to prevent injection attacks
+        /// </summary>
+        private static string EscapeGraphqlString(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+            {
+                return input;
+            }
+            
+            // Escape backslashes first, then quotes, then other special characters
+            return input
+                .Replace("\\", "\\\\")
+                .Replace("\"", "\\\"")
+                .Replace("\n", "\\n")
+                .Replace("\r", "\\r")
+                .Replace("\t", "\\t")
+                .Replace("\b", "\\b")
+                .Replace("\f", "\\f");
+        }
 
         /// <summary>
         /// Normalizes a path for API requests
@@ -414,6 +451,15 @@ namespace RazorPagesDotCMS.Services
         private static string NormalizePath(string? path)
         {
             path ??= "/";
+            
+            // Security: Prevent path traversal attacks
+            if (path.Contains("..") || path.Contains("~") || path.Contains("\\"))
+            {
+                throw new ArgumentException("Invalid path: Path traversal patterns are not allowed");
+            }
+            
+            // Remove any double slashes
+            path = System.Text.RegularExpressions.Regex.Replace(path, @"/{2,}", "/");
             
             if (!path.StartsWith('/'))
             {
