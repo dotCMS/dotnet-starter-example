@@ -41,7 +41,7 @@ namespace RazorPagesDotCMS.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="DotCmsService"/> class.
         /// </summary>
-        /// <param name="httpClientFactory">The HTTP client factory</param>
+        /// <param name="httpClient">The HTTP client</param>
         /// <param name="configuration">The configuration</param>
         /// <param name="logger">The logger</param>
         /// <param name="cache">LazyCache instance</param>
@@ -49,13 +49,13 @@ namespace RazorPagesDotCMS.Services
         /// <exception cref="ArgumentNullException">Thrown when required dependencies are null</exception>
         /// <exception cref="InvalidOperationException">Thrown when required configuration is missing</exception>
         public DotCmsService(
-            IHttpClientFactory httpClientFactory, 
+            HttpClient httpClient, 
             IConfiguration configuration, 
             ILogger<DotCmsService> logger, 
             IAppCache cache,
             ModelHelper modelHelper)
         {
-            _httpClient = httpClientFactory?.CreateClient() ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
@@ -83,11 +83,15 @@ namespace RazorPagesDotCMS.Services
                 var normalizedPath = NormalizePath(queryParams.Path);
                 var requestUrl = BuildPageApiUrl(normalizedPath, queryParams);
                 var mode = ParsePageMode(queryParams.PageMode);
+                
                 var cacheSeconds = queryParams.CacheSeconds ?? (mode == PageMode.LIVE_MODE ? DefaultCacheTtlSeconds : 0);
-
+                _logger.LogInformation("---- ");
+                _logger.LogInformation("---- Requesting page from : {RequestUrl}", requestUrl);
+                _logger.LogInformation("---- cached for secs      : {cacheSeconds}", cacheSeconds);
+                _logger.LogInformation("---- ");
                 return await _cache.GetOrAdd(requestUrl, async () =>
                 {
-                    _logger.LogInformation("Requesting page from: {RequestUrl}", requestUrl);
+
                     return await ExecutePageApiRequest(requestUrl);
                 }, DateTimeOffset.Now.AddSeconds(cacheSeconds));
             }

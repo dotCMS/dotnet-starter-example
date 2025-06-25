@@ -9,6 +9,10 @@ builder.Services.AddHttpClient();
 builder.Services.AddHttpClient("ProxyClient", client => {
     client.DefaultRequestHeaders.Add("User-Agent", "DotCMS.NET-SDK-Proxy");
     client.Timeout = TimeSpan.FromSeconds(60);
+})
+.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler()
+{
+    UseCookies = false
 });
 
 // Register ProxyActionFilter
@@ -20,8 +24,15 @@ builder.Services.AddSingleton<LazyCache.IAppCache>(new LazyCache.CachingService(
 // Register ModelHelper
 builder.Services.AddScoped<RazorPagesDotCMS.Models.ModelHelper>();
 
-// Register DotCMS service
-builder.Services.AddScoped<RazorPagesDotCMS.Services.IDotCmsService, RazorPagesDotCMS.Services.DotCmsService>();
+// Register DotCMS service with HttpClient that doesn't use cookies
+builder.Services.AddHttpClient<RazorPagesDotCMS.Services.IDotCmsService, RazorPagesDotCMS.Services.DotCmsService>(client => {
+    client.DefaultRequestHeaders.Add("User-Agent", "DotCMS.NET-SDK");
+    client.Timeout = TimeSpan.FromSeconds(60);
+})
+.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler()
+{
+    UseCookies = false
+});
 
 var app = builder.Build();
 

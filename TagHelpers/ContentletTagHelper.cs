@@ -69,7 +69,7 @@ namespace RazorPagesDotCMS.TagHelpers
                 // Try to find the view in ContentTypes directory or Shared/ContentTypes
                 string viewName = $"../DotCmsView/ContentTypes/{contentType}";
                 
-                _logger.LogInformation($"Looking for view: {viewName}");
+                _logger.LogDebug($"Looking for view: {viewName}");
                 
                 var actionContext = new ActionContext(ViewContext.HttpContext, ViewContext.RouteData, ViewContext.ActionDescriptor);
                 var viewResult = _viewEngine.FindView(actionContext, viewName, false);

@@ -18,8 +18,7 @@ namespace RazorPagesDotCMS.Controllers
             _dotCmsService = dotCmsService;
             _logger = logger;
 
-            // Log when the controller is constructed to verify it's being registered
-            _logger.LogInformation("DotCmsUVEController constructed");
+
         }
 
         [HttpGet, HttpPost]
@@ -33,7 +32,7 @@ namespace RazorPagesDotCMS.Controllers
             [FromQuery] bool fireRules = false,
             [FromQuery] int depth = 1)
         {
-            _logger.LogInformation("DotCmsUVEController.Index called with path: {Path}", catchAll);
+            _logger.LogDebug("DotCmsUVEController.Index called with path: {Path}", catchAll);
             
             try
             {

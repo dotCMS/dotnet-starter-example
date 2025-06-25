@@ -31,20 +31,20 @@ namespace RazorPagesDotCMS.Filters
             var request = context.HttpContext.Request;
             var path = request.Path.Value ?? string.Empty;
             
-            _logger.LogInformation($"Processing request path: {path}");
+            _logger.LogDebug($"Processing request path: {path}");
 
             // Check if the request path matches any of the proxy configurations
             var matchingProxy = _proxyConfigs.FirstOrDefault(p => p.IsMatch(path));
             
             if (matchingProxy == null)
             {
-                _logger.LogInformation($"No proxy match found for {path}, continuing to controller");
+                _logger.LogDebug($"No proxy match found for {path}, continuing to controller");
                 // No match found, continue to the controller
                 await next();
                 return;
             }
 
-            _logger.LogInformation($"Proxy match found for {path}, proxying to {matchingProxy.Target}");
+            _logger.LogDebug($"Proxy match found for {path}, proxying to {matchingProxy.Target}");
             
             // Create a proxy request
             var httpClient = _httpClientFactory.CreateClient("ProxyClient");
