@@ -1,7 +1,9 @@
 @model RazorPagesDotCMS.Models.Contentlet
 @{
+        
+
     // Extract common banner properties from AdditionalProperties
-    var imageUrl = "/dA/" + Model.Identifier + "/image/1200maxw/1200cw/570ch/80q/13ro/" + Model.Title;
+    var imageUrl = "/dA/" + Model.Identifier + "/image/1200maxw/1200cw/570ch/80q/13ro/" + Model.Title +"?nonce=" + Model.Inode;
         
     var linkUrl = Model.AdditionalProperties?.TryGetValue("link", out var linkValue) == true && linkValue.ValueKind == System.Text.Json.JsonValueKind.String
         ? linkValue.GetString()
