@@ -59,7 +59,9 @@ public DotCmsService(
 
 ## Configuration
 
-The service requires the following configuration values in `appsettings.json`:
+The service requires the ApiHost and either an ApiToken OR an ApiUsername/Password in the `appsettings.json`/
+
+
 
 ```json
 {
