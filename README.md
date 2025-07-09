@@ -202,9 +202,9 @@ The application is configured through the `appsettings.json` file:
 }
 ```
 
-### Proxy Configuration
+## Free Bonus: Asset/Image Proxy 
 
-The `proxy` section configures the proxy feature, which forwards specific requests to dotCMS or other target servers. This is particularly useful for handling assets, images, and other resources that need to be served directly from dotCMS.
+The .NET starter contains a static asset proxy that automatically forwards requests that start with `/dA` or `/contentAsset` to dotCMS for servicing.  This is particularly useful when you are running behind a CDN or some other layer and do not want to deal with remembering which origin to use, one for page requests and another for assets and images.  
 
 For more details, see [Proxy Documentation](docs/Proxy.md).
 
