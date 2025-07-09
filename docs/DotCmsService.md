@@ -170,7 +170,7 @@ public async Task<string> QueryGraphqlAsync(string graphqlQuery, int cacheSecond
 ```csharp
 var query = @"
 {
-  contentlets(contentType: ""Product"", limit: 10) {
+  contentlets(query: "+contentType:Product", limit: 10) {
     title
     identifier
     _map
