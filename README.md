@@ -22,6 +22,10 @@ The application will be available at `https://localhost:5001`.
 - Caching support for improved performance
 - Proxy support for serving dotCMS assets
 - Custom TagHelpers for simplified content rendering
+- GraphQL support for advanced querying
+- Built-in security features (path traversal protection, GraphQL injection prevention)
+- Comprehensive error handling and logging
+- Thread-safe service implementation
 
 
 ### Example dotCMS demo site rendering with C#, MVC & Razor
@@ -77,6 +81,10 @@ Key features:
 - **Caching**: Uses LazyCache to cache responses (configurable TTL)
 - **Error Handling**: Comprehensive logging and exception handling
 - **GraphQL Support**: Can query dotCMS via GraphQL as an alternative
+
+For more details, see [DotCmsService Documentation](docs/DotCmsService.md).
+
+
 
 ### 4. **View Layer** (Razor Templates)
 
@@ -207,6 +215,22 @@ The application is configured through the `appsettings.json` file:
 The .NET starter contains a static asset proxy that automatically forwards requests that start with `/dA` or `/contentAsset` to dotCMS for servicing.  This is particularly useful when you are running behind a CDN or some other layer and do not want to deal with remembering which origin to use, one for page requests and another for assets and images.  
 
 For more details, see [Proxy Documentation](docs/Proxy.md).
+
+## Documentation
+
+### Service Layer Documentation
+
+- **[DotCmsService](docs/DotCmsService.md)** - Comprehensive documentation for the core service that handles all dotCMS API interactions, including:
+  - Configuration and setup
+  - Authentication methods (API token vs basic auth)
+  - Caching strategies and performance optimization
+  - Security features and best practices
+  - Usage examples and error handling
+  - GraphQL support and custom queries
+
+### Additional Documentation
+
+- **[Proxy Configuration](docs/Proxy.md)** - Details on the asset proxy functionality for serving dotCMS static assets
 
 ## Architecture Benefits
 
